@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -10,13 +10,17 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainmenu.cpp
+    mainmenu.cpp \
+    src/main.cpp \
+    src/mainmenu.cpp
 
 HEADERS += \
-    mainmenu.h
+    mainmenu.h \
+    src/mainmenu.h
 
 FORMS += \
-    mainmenu.ui
+    mainmenu.ui \
+    src/mainmenu.ui
 
 TRANSLATIONS += \
     icp2021_en_US.ts
@@ -25,3 +29,6 @@ TRANSLATIONS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    src/icp2021_en_US.ts
