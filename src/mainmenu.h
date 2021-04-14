@@ -15,7 +15,16 @@ public:
     MainMenu(QWidget *parent = nullptr);
     ~MainMenu();
 
+
+public slots:
+    void openLibrary(bool trigered);
+    void exit(bool trigered);
+
+signals:
+    void saveWork();
+
 private:
     Ui::MainMenu *ui;
+
 };
 #endif // MAINMENU_H
