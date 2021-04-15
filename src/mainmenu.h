@@ -1,3 +1,6 @@
+/***
+ * \author Tomáš Dubský (xdubsk08)
+ * */
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
@@ -17,8 +20,13 @@ public:
 
 
 public slots:
-    void openLibrary(bool trigered);
-    void exit(bool trigered);
+    void on_actionOpenLib_triggered();
+    void on_actionExit_triggered();
+
+    void addNew(QString folderPath);
+    void editFile(QString filePath);
+    void deleteFolder(QString folderPath);
+    void deleteFile(QString filePath);
 
 signals:
     void saveWork();
@@ -26,5 +34,6 @@ signals:
 private:
     Ui::MainMenu *ui;
 
+    int deleteQuestion(QString title, QString text, QString path);
 };
 #endif // MAINMENU_H

@@ -16,14 +16,37 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="view">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
      <column>
       <property name="text">
-       <string notr="true">1</string>
+       <string>Library explorer</string>
       </property>
      </column>
     </widget>
    </item>
   </layout>
+  <action name="actionEdit_file">
+   <property name="text">
+    <string>Edit file</string>
+   </property>
+  </action>
+  <action name="actionAdd_new">
+   <property name="text">
+    <string>Add new...</string>
+   </property>
+  </action>
+  <action name="actionDelete_file">
+   <property name="text">
+    <string>Delete file</string>
+   </property>
+  </action>
+  <action name="actionDelete_folder">
+   <property name="text">
+    <string>Delete folder</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -1,3 +1,6 @@
+/***
+ * \author Tomáš Dubský (xdubsk08)
+ * */
 #include "mainmenu.h"
 
 #include <QApplication>
