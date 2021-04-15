@@ -20,8 +20,7 @@ public:
 
 
 public slots:
-    void on_actionOpenLib_triggered();
-    void on_actionExit_triggered();
+    void openLibrary(QString libpath);
 
     void addNew(QString folderPath);
     void editFile(QString filePath);
@@ -35,5 +34,9 @@ private:
     Ui::MainMenu *ui;
 
     int deleteQuestion(QString title, QString text, QString path);
+
+protected slots:
+    void on_actionOpenLib_triggered();
+    void on_actionExit_triggered();
 };
 #endif // MAINMENU_H

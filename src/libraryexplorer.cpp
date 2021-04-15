@@ -91,15 +91,17 @@ void LibraryExplorer::addDir(QTreeWidgetItem* parent, QString path){
 }
 
 QTreeWidgetItem* LibraryExplorer::addItem(QTreeWidgetItem* parent, QFileInfo fi){
-    QTreeWidgetItem* newItem = new QTreeWidgetItem{parent, QStringList() << fi.fileName()};
-    newItem->setData(0, Qt::UserRole, {fi.canonicalFilePath()});
+    QTreeWidgetItem* newItem;
     if (fi.isFile()){
+        newItem = new QTreeWidgetItem{parent, QStringList() << fi.baseName()};
         //Icon based on suffix
         newItem->setIcon(0, QIcon{fi.suffix()});
     } else {
+        newItem = new QTreeWidgetItem{parent, QStringList() << fi.fileName()};
         //Default folder icon
         newItem->setIcon(0, style()->standardIcon(QStyle::SP_DirIcon));
     }
+    newItem->setData(0, Qt::UserRole, {fi.canonicalFilePath()});
     return newItem;
 }
 

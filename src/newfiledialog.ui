@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NewFileDialog</class>
+ <widget class="QDialog" name="NewFileDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add new block or category</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>What type of item you want to add?</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListWidget" name="typeList">
+     <property name="currentRow">
+      <number>0</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Category</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Atomic block</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Composite block</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Enter name for the item:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLineEdit" name="name"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="suffix">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="add">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Add new item</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>typeList</sender>
+   <signal>itemClicked(QListWidgetItem*)</signal>
+   <receiver>NewFileDialog</receiver>
+   <slot>typeChosen(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>611</x>
+     <y>128</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>name</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>NewFileDialog</receiver>
+   <slot>validate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>226</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>add</sender>
+   <signal>clicked()</signal>
+   <receiver>NewFileDialog</receiver>
+   <slot>leave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>583</x>
+     <y>232</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>typeChosen(QListWidgetItem*)</slot>
+  <slot>validate()</slot>
+  <slot>leave()</slot>
+ </slots>
+</ui>

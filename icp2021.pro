@@ -11,15 +11,18 @@ CONFIG += c++17
 SOURCES += \
     src/libraryexplorer.cpp \
     src/main.cpp \
-    src/mainmenu.cpp
+    src/mainmenu.cpp \
+    src/newfiledialog.cpp
 
 HEADERS += \
     src/libraryexplorer.h \
-    src/mainmenu.h
+    src/mainmenu.h \
+    src/newfiledialog.h
 
 FORMS += \
     src/libraryexplorer.ui \
-    src/mainmenu.ui
+    src/mainmenu.ui \
+    src/newfiledialog.ui
 
 TRANSLATIONS += \
     src/icp2021_en_US.ts

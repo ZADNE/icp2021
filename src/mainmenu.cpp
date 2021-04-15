@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#include "newfiledialog.h"
+
 MainMenu::MainMenu(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainMenu){
@@ -22,10 +24,20 @@ MainMenu::MainMenu(QWidget *parent)
             this, &MainMenu::deleteFolder);
     connect(ui->libraryExplorer, &LibraryExplorer::deleteFile,
             this, &MainMenu::deleteFile);
+
+    //Convenience
+    #ifdef QT_DEBUG
+        openLibrary("exampleLib");
+    #endif
 }
 
 MainMenu::~MainMenu(){
     delete ui;
+}
+
+void MainMenu::openLibrary(QString libpath){
+    emit saveWork();
+    ui->libraryExplorer->loadLibrary(libpath);
 }
 
 void MainMenu::on_actionOpenLib_triggered(){
@@ -33,8 +45,7 @@ void MainMenu::on_actionOpenLib_triggered(){
         tr("Open a library"), QDir::currentPath());
 
     if (!folder.isEmpty()){//If a folder was selected
-        emit saveWork();
-        ui->libraryExplorer->loadLibrary(folder);
+        openLibrary(folder);
     }
 }
 
@@ -44,7 +55,11 @@ void MainMenu::on_actionExit_triggered(){
 }
 
 void MainMenu::addNew(QString folderPath){
-    qDebug() << "Add new: " << folderPath;
+    NewFileDialog f{this, folderPath};
+    if (f.exec()){
+        //NewFileResult r = f.getResult();
+        qDebug() << f.getResult().path;
+    }
 }
 
 void MainMenu::editFile(QString filePath){
@@ -59,8 +74,7 @@ void MainMenu::deleteFolder(QString folderPath){
 
     if (clicked == QMessageBox::Yes){
         //User really wants to delete this folder
-        QDir dir{folderPath};
-        dir.removeRecursively();
+        QDir{folderPath}.removeRecursively();
         ui->libraryExplorer->reloadLibrary();
     }
 }
@@ -74,7 +88,6 @@ void MainMenu::deleteFile(QString filePath){
     if (clicked == QMessageBox::Yes){
         //User really wants to delete this file
         QFile::remove(filePath);
-        QFile file{filePath};
         ui->libraryExplorer->reloadLibrary();
     }
 }
