@@ -14,11 +14,27 @@ LibraryExplorer::LibraryExplorer(QWidget* parent) :
 {
     ui->setupUi(this);
 
-
-    connect(ui->view, &QTreeWidget::itemDoubleClicked,
-            this, &LibraryExplorer::itemDoubleClicked);
+    //View connections
     connect(ui->view, &QTreeWidget::customContextMenuRequested,
             this, &LibraryExplorer::contextMenu);
+    connect(ui->view, &QTreeWidget::itemDoubleClicked,
+            this, &LibraryExplorer::viewItemDoubleclicked);
+    //Context menu actions connections
+    connect(ui->actionAdd_new, &QAction::triggered,
+            this, &LibraryExplorer::actionAdd_new);
+    connect(ui->actionEdit_file, &QAction::triggered,
+            this, &LibraryExplorer::actionEdit_file);
+    connect(ui->actionRename, &QAction::triggered,
+            this, &LibraryExplorer::actionRename);
+    connect(ui->actionDelete, &QAction::triggered,
+            this, &LibraryExplorer::actionDelete);
+    //Context menus construction
+    menuFolder.addAction(ui->actionAdd_new);
+    menuFolder.addAction(ui->actionRename);
+    menuFolder.addAction(ui->actionDelete);
+    menuFile.addAction(ui->actionEdit_file);
+    menuFile.addAction(ui->actionRename);
+    menuFile.addAction(ui->actionDelete);
 }
 
 LibraryExplorer::~LibraryExplorer(){
@@ -48,32 +64,27 @@ void LibraryExplorer::contextMenu(const QPoint &point){
         QMenu contextMenu{this};
         QFileInfo fi  = QFileInfo{index.data(Qt::UserRole).toString()};
         if (fi.isDir()){
-            //Context menu for folder
-            contextMenu.addAction(ui->actionAdd_new);
-            contextMenu.addAction(ui->actionDelete_folder);
+            menuFolder.popup(mapToGlobal(point));
         } else {
-            //Context menu for file
-            contextMenu.addAction(ui->actionEdit_file);
-            contextMenu.addAction(ui->actionDelete_file);
+            menuFile.popup(mapToGlobal(point));
         }
-        contextMenu.exec(mapToGlobal(point));
     }
 }
 
-void LibraryExplorer::on_actionEdit_file_triggered(){
+void LibraryExplorer::actionEdit_file(){
     emit editFile(currentPath());
 }
 
-void LibraryExplorer::on_actionAdd_new_triggered(){
+void LibraryExplorer::actionAdd_new(){
     emit addNew(currentPath());
 }
 
-void LibraryExplorer::on_actionDelete_folder_triggered(){
-    emit deleteFolder(currentPath());
+void LibraryExplorer::actionRename(){
+    emit renameThis(currentPath());
 }
 
-void LibraryExplorer::on_actionDelete_file_triggered(){
-    emit deleteFile(currentPath());
+void LibraryExplorer::actionDelete(){
+    emit deleteThis(currentPath());
 }
 
 void LibraryExplorer::addDir(QTreeWidgetItem* parent, QString path){
@@ -113,7 +124,7 @@ QString LibraryExplorer::path(QTreeWidgetItem *item, int column){
     return item->data(column, Qt::UserRole).toString();
 }
 
-void LibraryExplorer::itemDoubleClicked(QTreeWidgetItem *item, int column){
+void LibraryExplorer::viewItemDoubleclicked(QTreeWidgetItem *item, int column){
     QFileInfo fi = QFileInfo(path(item, column));
     if (fi.isFile()){
         emit editFile(fi.canonicalFilePath());

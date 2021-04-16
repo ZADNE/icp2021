@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
+#include <QInputDialog>
 
 #include "newfiledialog.h"
 
@@ -20,10 +21,10 @@ MainMenu::MainMenu(QWidget *parent)
             this, &MainMenu::addNew);
     connect(ui->libraryExplorer, &LibraryExplorer::editFile,
             this, &MainMenu::editFile);
-    connect(ui->libraryExplorer, &LibraryExplorer::deleteFolder,
-            this, &MainMenu::deleteFolder);
-    connect(ui->libraryExplorer, &LibraryExplorer::deleteFile,
-            this, &MainMenu::deleteFile);
+    connect(ui->libraryExplorer, &LibraryExplorer::renameThis,
+            this, &MainMenu::renameThis);
+    connect(ui->libraryExplorer, &LibraryExplorer::deleteThis,
+            this, &MainMenu::deleteThis);
 
     //Convenience
     #ifdef QT_DEBUG
@@ -36,8 +37,12 @@ MainMenu::~MainMenu(){
 }
 
 void MainMenu::openLibrary(QString libpath){
-    emit saveWork();
-    ui->libraryExplorer->loadLibrary(libpath);
+    QFileInfo fi = QFileInfo{libpath};
+    if (fi.isDir()){
+        emit saveWork();
+        lib = fi;
+        ui->libraryExplorer->loadLibrary(lib.canonicalFilePath());
+    }
 }
 
 void MainMenu::on_actionOpenLib_triggered(){
@@ -54,42 +59,86 @@ void MainMenu::on_actionExit_triggered(){
     QApplication::exit(0);
 }
 
-void MainMenu::addNew(QString folderPath){
-    NewFileDialog f{this, folderPath};
+void MainMenu::addNew(QString path){
+    NewFileDialog f{this, path};
     if (f.exec()){
         //NewFileResult r = f.getResult();
         qDebug() << f.getResult().path;
     }
 }
 
-void MainMenu::editFile(QString filePath){
-    qDebug() << "Edit file: " << filePath;
+void MainMenu::editFile(QString path){
+    qDebug() << "Edit file: " << path;
 }
 
-void MainMenu::deleteFolder(QString folderPath){
-    int clicked = deleteQuestion(
-                tr("Delete folder?"),
-                tr("Are you sure you want to delete the following folder and all its contents?"),
-                folderPath);
+void MainMenu::renameThis(QString path){
+    QFileInfo fi{path};
+    if (fi.isDir()){
+        //Renaming directory
+        bool renamingLib = fi == lib;
+        QString newName = renameDialog(renamingLib ? tr("library"): tr("folder"), fi.fileName());
+        if (!newName.isEmpty()){
+            QDir dir{fi.path()};
+            if (dir.rename(
+                    fi.fileName(),
+                    fi.path() + QDir::separator() + newName)){
+                //Successfully renamed
+                if (renamingLib){
+                    openLibrary(dir.canonicalPath() + QDir::separator() + newName);
+                } else {
+                    ui->libraryExplorer->reloadLibrary();
+                }
+            }
+        }
+    } else {
+        //Renaming file
+        QString newName = renameDialog(tr("block"), fi.baseName());
+        if (!newName.isEmpty()){
+            QFile file{path};
+            if (file.rename(fi.path() + QDir::separator() + newName + "." + fi.suffix())){
+                //Successfully renamed
+                ui->libraryExplorer->reloadLibrary();
+            }
+        }
+    }
 
-    if (clicked == QMessageBox::Yes){
-        //User really wants to delete this folder
-        QDir{folderPath}.removeRecursively();
-        ui->libraryExplorer->reloadLibrary();
+}
+
+void MainMenu::deleteThis(QString path){
+    QFileInfo fi{path};
+    if (fi.isDir()){
+        //Removing directory
+        int clicked = deleteQuestion(
+            tr("Delete folder?"),
+            tr("Are you sure you want to delete the following folder and all its contents?"),
+            path);
+        if (clicked == QMessageBox::Yes){
+            //User really wants to delete this folder
+            if (QDir{path}.removeRecursively()){
+                ui->libraryExplorer->reloadLibrary();
+            }
+        }
+    } else {
+        //Removing file
+        int clicked = deleteQuestion(
+            tr("Delete file?"),
+            tr("Are you sure you want to delete the following file?"),
+            path);
+        if (clicked == QMessageBox::Yes){
+            //User really wants to delete this file
+            if (QFile::remove(path)){
+                ui->libraryExplorer->reloadLibrary();
+            }
+        }
     }
 }
 
-void MainMenu::deleteFile(QString filePath){
-    int clicked = deleteQuestion(
-                tr("Delete file?"),
-                tr("Are you sure you want to delete the following file?"),
-                filePath);
-
-    if (clicked == QMessageBox::Yes){
-        //User really wants to delete this file
-        QFile::remove(filePath);
-        ui->libraryExplorer->reloadLibrary();
-    }
+QString MainMenu::renameDialog(QString what, QString oldName){
+    QString newName = QInputDialog::getText(
+                this, tr("Rename ") + what + "?",
+                tr("Enter new name for the ") + what + ":", QLineEdit::Normal,
+                oldName);
+    return newName;
 }
 
 int MainMenu::deleteQuestion(QString title, QString text, QString path){

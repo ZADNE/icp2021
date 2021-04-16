@@ -13,8 +13,7 @@ namespace Ui {
 class LibraryExplorer;
 }
 
-class LibraryExplorer : public QWidget
-{
+class LibraryExplorer : public QWidget{
     Q_OBJECT
 
 public:
@@ -27,10 +26,10 @@ public slots:
     void reloadLibrary();
 
 signals:
-    void addNew(QString folderPath);
-    void editFile(QString filePath);
-    void deleteFolder(QString folderPath);
-    void deleteFile(QString filePath);
+    void addNew(QString path);
+    void editFile(QString path);
+    void renameThis(QString path);
+    void deleteThis(QString path);
 
 
 private:
@@ -50,13 +49,13 @@ private:
 
 
 private slots:
-    void itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void viewItemDoubleclicked(QTreeWidgetItem *item, int column);
     void contextMenu(const QPoint &point);
 
-    void on_actionEdit_file_triggered();
-    void on_actionAdd_new_triggered();
-    void on_actionDelete_folder_triggered();
-    void on_actionDelete_file_triggered();
+    void actionEdit_file();
+    void actionAdd_new();
+    void actionRename();
+    void actionDelete();
 };
 
 #endif // LIBRARYEXPLORER_H

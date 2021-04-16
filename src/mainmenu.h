@@ -5,13 +5,13 @@
 #define MAINMENU_H
 
 #include <QMainWindow>
+#include <QFileInfo>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainMenu; }
 QT_END_NAMESPACE
 
-class MainMenu : public QMainWindow
-{
+class MainMenu : public QMainWindow{
     Q_OBJECT
 
 public:
@@ -22,10 +22,10 @@ public:
 public slots:
     void openLibrary(QString libpath);
 
-    void addNew(QString folderPath);
-    void editFile(QString filePath);
-    void deleteFolder(QString folderPath);
-    void deleteFile(QString filePath);
+    void addNew(QString path);
+    void editFile(QString path);
+    void renameThis(QString path);
+    void deleteThis(QString path);
 
 signals:
     void saveWork();
@@ -33,6 +33,9 @@ signals:
 private:
     Ui::MainMenu *ui;
 
+    QFileInfo lib;
+
+    QString renameDialog(QString what, QString oldName);
     int deleteQuestion(QString title, QString text, QString path);
 
 protected slots:

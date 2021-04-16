@@ -24,8 +24,7 @@ struct NewFileResult{
     QString path;
 };
 
-class NewFileDialog : public QDialog
-{
+class NewFileDialog : public QDialog{
     Q_OBJECT
 
 public:
@@ -33,8 +32,6 @@ public:
     ~NewFileDialog();
 
     NewFileResult getResult();
-
-
 private:
     Ui::NewFileDialog *ui;
 
