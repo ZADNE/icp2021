@@ -11,20 +11,25 @@
 
 #include "newfiledialog.h"
 
-MainMenu::MainMenu(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainMenu){
+MainMenu::MainMenu(QWidget *parent):
+    QMainWindow(parent),
+    ui(new Ui::MainMenu)  {
     ui->setupUi(this);
 
     //Connect signals from library explorer
     connect(ui->libraryExplorer, &LibraryExplorer::addNew,
             this, &MainMenu::addNew);
     connect(ui->libraryExplorer, &LibraryExplorer::editFile,
-            this, &MainMenu::editFile);
+            ui->tabEditor, &TabEditor::editFile);
+    connect(ui->libraryExplorer, &LibraryExplorer::renameThis,
+            this, &MainMenu::saveWork);//Save work before renaming
     connect(ui->libraryExplorer, &LibraryExplorer::renameThis,
             this, &MainMenu::renameThis);
     connect(ui->libraryExplorer, &LibraryExplorer::deleteThis,
             this, &MainMenu::deleteThis);
+    //Connect signals to tab editor
+    connect(this, &MainMenu::saveWork,
+            ui->tabEditor, &TabEditor::saveWork);
 
     //Convenience
     #ifdef QT_DEBUG
@@ -67,10 +72,6 @@ void MainMenu::addNew(QString path){
     }
 }
 
-void MainMenu::editFile(QString path){
-    qDebug() << "Edit file: " << path;
-}
-
 void MainMenu::renameThis(QString path){
     QFileInfo fi{path};
     if (fi.isDir()){
@@ -78,13 +79,11 @@ void MainMenu::renameThis(QString path){
         bool renamingLib = fi == lib;
         QString newName = renameDialog(renamingLib ? tr("library"): tr("folder"), fi.fileName());
         if (!newName.isEmpty()){
-            QDir dir{fi.path()};
-            if (dir.rename(
-                    fi.fileName(),
-                    fi.path() + QDir::separator() + newName)){
+            if (ui->tabEditor->renameFolder(fi.path(), fi.fileName(),
+                    newName)){
                 //Successfully renamed
                 if (renamingLib){
-                    openLibrary(dir.canonicalPath() + QDir::separator() + newName);
+                    openLibrary(fi.path() + "/" + newName);
                 } else {
                     ui->libraryExplorer->reloadLibrary();
                 }
@@ -94,14 +93,13 @@ void MainMenu::renameThis(QString path){
         //Renaming file
         QString newName = renameDialog(tr("block"), fi.baseName());
         if (!newName.isEmpty()){
-            QFile file{path};
-            if (file.rename(fi.path() + QDir::separator() + newName + "." + fi.suffix())){
+            if (ui->tabEditor->renameFile(
+                        path, fi.path() + "/" + newName + "." + fi.suffix())){
                 //Successfully renamed
                 ui->libraryExplorer->reloadLibrary();
             }
         }
     }
-
 }
 
 void MainMenu::deleteThis(QString path){
@@ -114,7 +112,7 @@ void MainMenu::deleteThis(QString path){
             path);
         if (clicked == QMessageBox::Yes){
             //User really wants to delete this folder
-            if (QDir{path}.removeRecursively()){
+            if (ui->tabEditor->deleteFolder(path)){
                 ui->libraryExplorer->reloadLibrary();
             }
         }
@@ -126,7 +124,7 @@ void MainMenu::deleteThis(QString path){
             path);
         if (clicked == QMessageBox::Yes){
             //User really wants to delete this file
-            if (QFile::remove(path)){
+            if (ui->tabEditor->deleteFile(path)){
                 ui->libraryExplorer->reloadLibrary();
             }
         }

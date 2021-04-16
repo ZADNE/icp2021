@@ -23,7 +23,6 @@ public slots:
     void openLibrary(QString libpath);
 
     void addNew(QString path);
-    void editFile(QString path);
     void renameThis(QString path);
     void deleteThis(QString path);
 

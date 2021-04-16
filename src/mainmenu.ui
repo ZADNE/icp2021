@@ -7,14 +7,32 @@
     <x>0</x>
     <y>0</y>
     <width>776</width>
-    <height>594</height>
+    <height>572</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Block Creator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>4</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="LibraryExplorer" name="libraryExplorer" native="true">
       <property name="sizePolicy">
@@ -26,34 +44,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="acceptDrops">
-       <bool>true</bool>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <property name="tabsClosable">
-       <bool>true</bool>
-      </property>
-      <property name="movable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="noItemOpen">
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-       <attribute name="title">
-        <string>No item is open</string>
-       </attribute>
-      </widget>
-     </widget>
+     <widget class="TabEditor" name="tabEditor" native="true"/>
     </item>
    </layout>
   </widget>
@@ -75,7 +66,6 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpenLib">
    <property name="text">
     <string>Open a library...</string>
@@ -97,7 +87,16 @@
    <header>libraryexplorer.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>TabEditor</class>
+   <extends>QWidget</extends>
+   <header>tabeditor.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections/>
+ <slots>
+  <slot>closeTab(int)</slot>
+ </slots>
 </ui>

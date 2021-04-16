@@ -26,8 +26,7 @@ NewFileResult NewFileDialog::getResult(){
 }
 
 QString NewFileDialog::constructFilePath(){
-    return workDir + QDir::separator() +
-        ui->name->text() + ui->suffix->text();
+    return workDir + "/" + ui->name->text() + ui->suffix->text();
 }
 
 void NewFileDialog::validate(){

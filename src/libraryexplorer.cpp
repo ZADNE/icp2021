@@ -8,7 +8,7 @@
 #include <QDirIterator>
 #include <QDebug>
 
-LibraryExplorer::LibraryExplorer(QWidget* parent) :
+LibraryExplorer::LibraryExplorer(QWidget* parent):
     QWidget(parent),
     ui(new Ui::LibraryExplorer)
 {
