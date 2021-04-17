@@ -61,7 +61,6 @@ void LibraryExplorer::reloadLibrary(){
 void LibraryExplorer::contextMenu(const QPoint &point){
     QModelIndex index = ui->view->indexAt(point);
     if (index.isValid()){ //If clicked on an item
-        QMenu contextMenu{this};
         QFileInfo fi  = QFileInfo{index.data(Qt::UserRole).toString()};
         if (fi.isDir()){
             menuFolder.popup(mapToGlobal(point));
@@ -104,7 +103,7 @@ void LibraryExplorer::addDir(QTreeWidgetItem* parent, QString path){
 QTreeWidgetItem* LibraryExplorer::addItem(QTreeWidgetItem* parent, QFileInfo fi){
     QTreeWidgetItem* newItem;
     if (fi.isFile()){
-        newItem = new QTreeWidgetItem{parent, QStringList() << fi.baseName()};
+        newItem = new QTreeWidgetItem{parent, QStringList() << fi.completeBaseName()};
         //Icon based on suffix
         newItem->setIcon(0, QIcon{fi.suffix()});
     } else {

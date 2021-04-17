@@ -4,7 +4,7 @@
 #include <QDebug>
 
 CompEditor::CompEditor(QWidget *parent) :
-    QWidget(parent),
+    BlockEditor(parent),
     ui(new Ui::CompEditor)
 {
     ui->setupUi(this);
@@ -16,5 +16,5 @@ CompEditor::~CompEditor(){
 }
 
 void CompEditor::saveWork(){
-    qDebug() << accessibleDescription();
+    qDebug() << filePath();
 }

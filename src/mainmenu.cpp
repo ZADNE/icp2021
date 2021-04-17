@@ -31,6 +31,8 @@ MainMenu::MainMenu(QWidget *parent):
     connect(this, &MainMenu::saveWork,
             ui->tabEditor, &TabEditor::saveWork);
 
+    updateNoTabLabel();
+
     //Convenience
     #ifdef QT_DEBUG
         openLibrary("exampleLib");
@@ -44,18 +46,19 @@ MainMenu::~MainMenu(){
 void MainMenu::openLibrary(QString libpath){
     QFileInfo fi = QFileInfo{libpath};
     if (fi.isDir()){
-        emit saveWork();
         lib = fi;
+        ui->tabEditor->closeAllTabs();
+        updateNoTabLabel();
         ui->libraryExplorer->loadLibrary(lib.canonicalFilePath());
     }
 }
 
 void MainMenu::on_actionOpenLib_triggered(){
-    QString folder = QFileDialog::getExistingDirectory(this,
+    QString folderName = QFileDialog::getExistingDirectory(this,
         tr("Open a library"), QDir::currentPath());
 
-    if (!folder.isEmpty()){//If a folder was selected
-        openLibrary(folder);
+    if (!folderName.isEmpty()){//If a folder was selected
+        openLibrary(folderName);
     }
 }
 
@@ -91,7 +94,7 @@ void MainMenu::renameThis(QString path){
         }
     } else {
         //Renaming file
-        QString newName = renameDialog(tr("block"), fi.baseName());
+        QString newName = renameDialog(tr("block"), fi.completeBaseName());
         if (!newName.isEmpty()){
             if (ui->tabEditor->renameFile(
                         path, fi.path() + "/" + newName + "." + fi.suffix())){
@@ -144,4 +147,14 @@ int MainMenu::deleteQuestion(QString title, QString text, QString path){
                 this, title,
                 text + "\n\n" + path,
                 QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
+}
+
+void MainMenu::updateNoTabLabel(){
+    QString text = "<font  size=\"6\">No block is open for editing.</font><br>";
+    if (lib.exists()){
+        text += "<font  size=\"4\">&gt; Open a block from library on the left.</font><br>";;
+    } else {
+        text += "<font  size=\"4\">&gt; Open a library from top menu bar.</font><br>";
+    }
+    ui->tabEditor->getNoTabLabel().setText(text);
 }

@@ -72,9 +72,9 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="no_block_label">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;div  style=&quot; font-size:12pt;&quot;&gt;No block is open for editing.&lt;/div&gt;&lt;div&gt;&amp;gt; Open a block from library.&lt;/div&gt;&lt;div&gt;&amp;gt; You can open a library from top menu bar.&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;font  size=&quot;6&quot;&gt;No block is open for editing.&lt;/font&gt;</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>

@@ -1,13 +1,18 @@
+/***
+ * \author Tomáš Dubský (xdubsk08)
+ * */
 #ifndef COMPEDITOR_H
 #define COMPEDITOR_H
 
 #include <QWidget>
 
+#include "blockeditor.h"
+
 namespace Ui {
 class CompEditor;
 }
 
-class CompEditor : public QWidget{
+class CompEditor: public BlockEditor{
     Q_OBJECT
 
 public:

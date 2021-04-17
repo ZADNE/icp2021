@@ -11,20 +11,24 @@ CONFIG += c++17
 SOURCES += \
     src/atomeditor.cpp \
     src/blockcompiler.cpp \
+    src/blockeditor.cpp \
     src/compeditor.cpp \
     src/libraryexplorer.cpp \
     src/main.cpp \
     src/mainmenu.cpp \
     src/newfiledialog.cpp \
+    src/porteditor.cpp \
     src/tabeditor.cpp
 
 HEADERS += \
     src/atomeditor.h \
     src/blockcompiler.h \
+    src/blockeditor.h \
     src/compeditor.h \
     src/libraryexplorer.h \
     src/mainmenu.h \
     src/newfiledialog.h \
+    src/porteditor.h \
     src/tabeditor.h
 
 FORMS += \
@@ -33,6 +37,7 @@ FORMS += \
     src/libraryexplorer.ui \
     src/mainmenu.ui \
     src/newfiledialog.ui \
+    src/porteditor.ui \
     src/tabeditor.ui
 
 TRANSLATIONS += \

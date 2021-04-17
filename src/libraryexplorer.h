@@ -46,8 +46,6 @@ private:
 
     QMenu menuFolder;
     QMenu menuFile;
-
-
 private slots:
     void viewItemDoubleclicked(QTreeWidgetItem *item, int column);
     void contextMenu(const QPoint &point);

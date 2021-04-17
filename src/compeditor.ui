@@ -19,14 +19,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>COMP ADITOR</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Close</string>
+        <string>COMP EDITOR</string>
        </property>
       </widget>
      </item>

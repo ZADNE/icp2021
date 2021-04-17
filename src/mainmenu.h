@@ -36,6 +36,7 @@ private:
 
     QString renameDialog(QString what, QString oldName);
     int deleteQuestion(QString title, QString text, QString path);
+    void updateNoTabLabel();
 
 protected slots:
     void on_actionOpenLib_triggered();

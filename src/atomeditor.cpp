@@ -1,3 +1,6 @@
+/***
+ * \author Tomáš Dubský (xdubsk08)
+ * */
 #include "atomeditor.h"
 #include "ui_atomeditor.h"
 
@@ -5,7 +8,7 @@
 #include <QFile>
 
 AtomEditor::AtomEditor(QWidget *parent):
-    QWidget(parent),
+    BlockEditor(parent),
     ui(new Ui::AtomEditor)
 {
     ui->setupUi(this);
@@ -17,5 +20,5 @@ AtomEditor::~AtomEditor(){
 }
 
 void AtomEditor::saveWork(){
-    qDebug() << accessibleDescription();
+    qDebug() << filePath();
 }

@@ -5,6 +5,10 @@
 #define TABEDITOR_H
 
 #include <QWidget>
+#include <QLabel>
+#include <unordered_map>
+
+#include "blockeditor.h"
 
 namespace Ui {
 class TabEditor;
@@ -18,7 +22,7 @@ public:
     ~TabEditor();
 
 
-
+    QLabel& getNoTabLabel();
 
 public slots:
     void editFile(QString path);
@@ -26,6 +30,8 @@ public slots:
     bool deleteFile(QString path);
     bool renameFolder(QString path, QString oldName, QString newName);
     bool deleteFolder(QString path);
+
+    void closeAllTabs();
     void checkTabValidity();
 
 signals:
@@ -34,8 +40,10 @@ signals:
 private:
     Ui::TabEditor *ui;
 
+    void addNoTab();
+
+    std::unordered_map<QString, BlockEditor*> tabs;
 protected slots:
-    void closeTab(QWidget* page);
     void closeTab(int index);
 };
 
