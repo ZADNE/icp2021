@@ -29,6 +29,10 @@ PortEditor::~PortEditor(){
     delete ui;
 }
 
+int PortEditor::count(){
+    return ui->ports->topLevelItemCount();
+}
+
 QTreeWidgetItemIterator PortEditor::iterator(){
     return QTreeWidgetItemIterator{ui->ports};
 }

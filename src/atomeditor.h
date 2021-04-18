@@ -23,8 +23,7 @@ public:
 protected:
     void load() override;
     void save() override;
-    void compile() override;
-
+    void build() override;
 
 private:
     Ui::AtomEditor *ui;

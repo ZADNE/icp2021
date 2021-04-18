@@ -8,8 +8,12 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 
-void writePorts(QTreeWidgetItemIterator it, QXmlStreamWriter &out);
-void readPorts(PortEditor* port, QXmlStreamReader &in);
+#include "blockcompiler.h"
+
+//Helper functions
+void writePortsToXML(PortEditor* pe, QXmlStreamWriter &out);
+void readPortsFromXML(PortEditor* pe, QXmlStreamReader &in);
+SlotList extractPorts(PortEditor* pe);
 
 AtomEditor::AtomEditor(QWidget *parent):
     BlockEditor(parent),
@@ -43,11 +47,11 @@ void AtomEditor::load(){
         ui->nameEditor->setText(in.attributes().value("NAME").toString());
         if (!in.readNextStartElement()) return;
         if (in.name() == "INPUT_PORTS"){
-            readPorts(ui->inputEditor, in);
+            readPortsFromXML(ui->inputEditor, in);
         }
         if (!in.readNextStartElement()) return;
         if (in.name() == "OUTPUT_PORTS"){
-            readPorts(ui->outputEditor, in);
+            readPortsFromXML(ui->outputEditor, in);
         }
         if (!in.readNextStartElement()) return;
         if (in.name() == "FUNCTION_BODY"){
@@ -68,10 +72,10 @@ void AtomEditor::save(){
         out.writeStartElement("ATOM");
             out.writeAttribute("NAME", ui->nameEditor->text());
             out.writeStartElement("INPUT_PORTS");
-                writePorts(ui->inputEditor->iterator(), out);
+                writePortsToXML(ui->inputEditor, out);
             out.writeEndElement();
             out.writeStartElement("OUTPUT_PORTS");
-                writePorts(ui->outputEditor->iterator(), out);
+                writePortsToXML(ui->outputEditor, out);
             out.writeEndElement();
             out.writeStartElement("FUNCTION_BODY");
                 out.writeCharacters(ui->codeEditor->toPlainText());
@@ -81,19 +85,45 @@ void AtomEditor::save(){
     file.close();
 }
 
-void AtomEditor::compile(){
-    qDebug() << "comp";
+void AtomEditor::build(){
+    //Construct specification
+    AtomSpec spec;
+    //Block name
+    spec.name = ui->nameEditor->text().toStdString();
+    //Function body
+    spec.body = ui->codeEditor->toPlainText().toStdString();
+    //Input ports
+    spec.inputs = extractPorts(ui->inputEditor);
+    //Output ports
+    spec.outputs = extractPorts(ui->outputEditor);
+    //Build using specification
+    BlockCompiler::bc().buildAtom((filePath() + ".h").toStdString(), spec);
 }
 
-void writePorts(QTreeWidgetItemIterator it, QXmlStreamWriter &out) {
+void writePortsToXML(PortEditor* pe, QXmlStreamWriter &out) {
+    auto it = pe->iterator();
     while (*it){
         out.writeTextElement((*it)->text(1), (*it)->text(0));
         ++it;
     }
 }
 
-void readPorts(PortEditor* port, QXmlStreamReader &in){
+void readPortsFromXML(PortEditor* pe, QXmlStreamReader &in){
     while (in.readNextStartElement()){
-        port->addPort(in.readElementText(), in.name().toString());
+        pe->addPort(in.readElementText(), in.name().toString());
     }
+}
+
+SlotList extractPorts(PortEditor* pe){
+    SlotList sl;
+    sl.reserve(pe->count());
+    auto it = pe->iterator();
+    while (*it){
+        SlotSpec ss;
+        ss.type = (*it)->text(0).toStdString();
+        ss.name = (*it)->text(1).toStdString();
+        sl.push_back(ss);
+        ++it;
+    }
+    return sl;
 }

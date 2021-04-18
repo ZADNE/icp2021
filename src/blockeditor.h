@@ -25,13 +25,13 @@ signals:
 
 public slots:
     virtual void saveWork() final;
-    virtual void compileWork() final;
+    virtual void buildWork() final;
     virtual void editedWork() final;
 
 protected:
     virtual void load() = 0;
     virtual void save() = 0;
-    virtual void compile() = 0;
+    virtual void build() = 0;
 
 private:
     QFileInfo m_fileInfo;

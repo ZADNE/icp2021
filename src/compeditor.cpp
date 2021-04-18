@@ -23,6 +23,6 @@ void CompEditor::save(){
     qDebug() << filePath();
 }
 
-void CompEditor::compile(){
+void CompEditor::build(){
 
 }

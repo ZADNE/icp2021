@@ -223,7 +223,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="compileButton">
+         <widget class="QPushButton" name="buildButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -238,7 +238,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Compile!</string>
+           <string>Build!</string>
           </property>
          </widget>
         </item>
@@ -390,14 +390,14 @@
  <resources/>
  <connections>
   <connection>
-   <sender>compileButton</sender>
+   <sender>buildButton</sender>
    <signal>pressed()</signal>
    <receiver>AtomEditor</receiver>
-   <slot>compileWork()</slot>
+   <slot>buildWork()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>217</x>
-     <y>282</y>
+     <x>455</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
      <x>215</x>
@@ -405,8 +405,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>saveButton</sender>
+   <signal>pressed()</signal>
+   <receiver>AtomEditor</receiver>
+   <slot>saveWork()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>415</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>compileWork()</slot>
+  <slot>buildWork()</slot>
+  <slot>saveWork()</slot>
  </slots>
 </ui>

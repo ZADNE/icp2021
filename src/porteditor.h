@@ -19,6 +19,8 @@ public:
     explicit PortEditor(QWidget *parent = nullptr);
     ~PortEditor();
 
+    int count();
+
     QTreeWidgetItemIterator iterator();
 
 signals:

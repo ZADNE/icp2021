@@ -44,9 +44,9 @@ void BlockEditor::saveWork(){
     }
 }
 
-void BlockEditor::compileWork(){
+void BlockEditor::buildWork(){
     saveWork();
-    compile();
+    build();
 }
 
 void BlockEditor::editedWork(){

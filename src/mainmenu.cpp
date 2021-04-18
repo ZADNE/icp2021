@@ -4,12 +4,15 @@
 #include "mainmenu.h"
 #include "ui_mainmenu.h"
 
+#include <string>
+
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
 #include <QInputDialog>
 
 #include "newfiledialog.h"
+#include "blockcompiler.h"
 
 MainMenu::MainMenu(QWidget *parent):
     QMainWindow(parent),
@@ -50,6 +53,7 @@ void MainMenu::openLibrary(QString libpath){
         ui->tabEditor->closeAllTabs();
         updateNoTabLabel();
         ui->libraryExplorer->loadLibrary(m_lib.canonicalFilePath());
+        BlockCompiler::bc().openLibrary(libpath.toUtf8().constData());
     }
 }
 
