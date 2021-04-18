@@ -16,8 +16,8 @@ enum class FileType{
     comp
 };
 
-struct NewFileResult{
-    NewFileResult(FileType type, QString path):
+struct NewFileRequest{
+    NewFileRequest(FileType type, QString path):
         type(type), path(path){}
 
     FileType type;
@@ -31,14 +31,15 @@ public:
     explicit NewFileDialog(QWidget *parent = nullptr, QString workdir = "");
     ~NewFileDialog();
 
-    NewFileResult getResult();
+    NewFileRequest getResult();
+
 private:
     Ui::NewFileDialog *ui;
 
-    QString workDir;
+    QString m_workDir;
 
-    bool fileValid = false;
-    FileType type = FileType::none;
+    bool m_fileValid = false;
+    FileType m_type = FileType::none;
 
     QString constructFilePath();
 

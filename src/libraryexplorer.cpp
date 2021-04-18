@@ -29,12 +29,12 @@ LibraryExplorer::LibraryExplorer(QWidget* parent):
     connect(ui->actionDelete, &QAction::triggered,
             this, &LibraryExplorer::actionDelete);
     //Context menus construction
-    menuFolder.addAction(ui->actionAdd_new);
-    menuFolder.addAction(ui->actionRename);
-    menuFolder.addAction(ui->actionDelete);
-    menuFile.addAction(ui->actionEdit_file);
-    menuFile.addAction(ui->actionRename);
-    menuFile.addAction(ui->actionDelete);
+    m_menuFolder.addAction(ui->actionAdd_new);
+    m_menuFolder.addAction(ui->actionRename);
+    m_menuFolder.addAction(ui->actionDelete);
+    m_menuFile.addAction(ui->actionEdit_file);
+    m_menuFile.addAction(ui->actionRename);
+    m_menuFile.addAction(ui->actionDelete);
 }
 
 LibraryExplorer::~LibraryExplorer(){
@@ -45,7 +45,7 @@ void LibraryExplorer::loadLibrary(QString libraryPath){
     ui->view->clear();
 
     QFileInfo lib{libraryPath};
-    libPath = lib.absoluteFilePath();
+    m_libPath = lib.absoluteFilePath();
 
     auto* root = addItem(nullptr, lib);
     ui->view->addTopLevelItem(root);
@@ -55,7 +55,7 @@ void LibraryExplorer::loadLibrary(QString libraryPath){
 }
 
 void LibraryExplorer::reloadLibrary(){
-    loadLibrary(libPath);
+    loadLibrary(m_libPath);
 }
 
 void LibraryExplorer::contextMenu(const QPoint &point){
@@ -63,9 +63,9 @@ void LibraryExplorer::contextMenu(const QPoint &point){
     if (index.isValid()){ //If clicked on an item
         QFileInfo fi  = QFileInfo{index.data(Qt::UserRole).toString()};
         if (fi.isDir()){
-            menuFolder.popup(mapToGlobal(point));
+            m_menuFolder.popup(mapToGlobal(point));
         } else {
-            menuFile.popup(mapToGlobal(point));
+            m_menuFile.popup(mapToGlobal(point));
         }
     }
 }

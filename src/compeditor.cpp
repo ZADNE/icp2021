@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-CompEditor::CompEditor(QWidget *parent) :
+CompEditor::CompEditor(QWidget *parent):
     BlockEditor(parent),
     ui(new Ui::CompEditor)
 {
@@ -11,10 +11,18 @@ CompEditor::CompEditor(QWidget *parent) :
 }
 
 CompEditor::~CompEditor(){
-    saveWork();
+    CompEditor::saveWork();
     delete ui;
 }
 
-void CompEditor::saveWork(){
+void CompEditor::load(){
+
+}
+
+void CompEditor::save(){
     qDebug() << filePath();
+}
+
+void CompEditor::compile(){
+
 }

@@ -18,6 +18,8 @@ public:
     MainMenu(QWidget *parent = nullptr);
     ~MainMenu();
 
+signals:
+    void saveWork();
 
 public slots:
     void openLibrary(QString libpath);
@@ -26,20 +28,19 @@ public slots:
     void renameThis(QString path);
     void deleteThis(QString path);
 
-signals:
-    void saveWork();
+
+protected slots:
+    void on_actionOpenLib_triggered();
+    void on_actionExit_triggered();
 
 private:
     Ui::MainMenu *ui;
 
-    QFileInfo lib;
+    QFileInfo m_lib;
 
     QString renameDialog(QString what, QString oldName);
     int deleteQuestion(QString title, QString text, QString path);
     void updateNoTabLabel();
 
-protected slots:
-    void on_actionOpenLib_triggered();
-    void on_actionExit_triggered();
 };
 #endif // MAINMENU_H

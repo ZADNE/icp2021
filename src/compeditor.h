@@ -17,10 +17,12 @@ class CompEditor: public BlockEditor{
 
 public:
     explicit CompEditor(QWidget *parent = nullptr);
-    ~CompEditor();
+    ~CompEditor() override;
 
-public slots:
-    void saveWork();
+protected:
+    void load() override;
+    void save() override;
+    void compile() override;
 
 private:
     Ui::CompEditor *ui;

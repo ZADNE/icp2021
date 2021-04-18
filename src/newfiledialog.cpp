@@ -8,48 +8,49 @@
 NewFileDialog::NewFileDialog(QWidget *parent, QString workdir) :
     QDialog(parent),
     ui(new Ui::NewFileDialog),
-    workDir(workdir)
+    m_workDir(workdir)
 {
     ui->setupUi(this);
+    m_type = FileType::dir;
 }
 
 NewFileDialog::~NewFileDialog(){
     delete ui;
 }
 
-NewFileResult NewFileDialog::getResult(){
-    if (fileValid){
-        return NewFileResult{type, constructFilePath()};
+NewFileRequest NewFileDialog::getResult(){
+    if (m_fileValid){
+        return NewFileRequest{m_type, constructFilePath()};
     } else {
-        return NewFileResult{FileType::none, ""};
+        return NewFileRequest{FileType::none, ""};
     }
 }
 
 QString NewFileDialog::constructFilePath(){
-    return workDir + "/" + ui->name->text() + ui->suffix->text();
+    return m_workDir + "/" + ui->name->text() + ui->suffix->text();
 }
 
 void NewFileDialog::validate(){
     QFileInfo fi{constructFilePath()};
 
-    fileValid = !fi.exists() && !ui->name->text().isEmpty();
-    ui->add->setEnabled(fileValid);
+    m_fileValid = !fi.exists() && !ui->name->text().isEmpty();
+    ui->add->setEnabled(m_fileValid);
 }
 
 void NewFileDialog::typeChosen(QListWidgetItem* item){
     if (item->text() == tr("Atomic block")){
-        type = FileType::atom;
+        m_type = FileType::atom;
         ui->suffix->setText(".atom");
     } else if (item->text() == tr("Composite block")){
-        type = FileType::comp;
+        m_type = FileType::comp;
         ui->suffix->setText(".comp");
     } else {
-        type = FileType::dir;
+        m_type = FileType::dir;
         ui->suffix->setText("");
     }
     validate();
 }
 
 void NewFileDialog::leave(){
-    done(fileValid);
+    done(m_fileValid);
 }

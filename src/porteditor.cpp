@@ -18,29 +18,39 @@ PortEditor::PortEditor(QWidget *parent):
             this, &PortEditor::addNewPort);
     connect(ui->actionRemove_port, &QAction::triggered,
             this, &PortEditor::removeCurrentPort);
+    connect(ui->ports, &QTreeWidget::itemChanged,
+            this, &PortEditor::edited);
     //Context menus construction
-    menuSlot.addAction(ui->actionRemove_port);
-    menuSpace.addAction(ui->actionAdd_new_port);
+    m_menuSlot.addAction(ui->actionRemove_port);
+    m_menuSpace.addAction(ui->actionAdd_new_port);
 }
 
 PortEditor::~PortEditor(){
     delete ui;
 }
 
+QTreeWidgetItemIterator PortEditor::iterator(){
+    return QTreeWidgetItemIterator{ui->ports};
+}
+
 void PortEditor::contextMenu(const QPoint &point){
     QModelIndex index = ui->ports->indexAt(point);
     if (index.isValid()){ //If clicked on a port
-        menuSlot.exec(mapToGlobal(point));
+        m_menuSlot.exec(mapToGlobal(point));
     } else { //Did not click on a port
-        menuSpace.popup(mapToGlobal(point));
+        m_menuSpace.popup(mapToGlobal(point));
     }
 }
 
-void PortEditor::addNewPort(){
+void PortEditor::addPort(QString type, QString name){
     auto* port = new QTreeWidgetItem{static_cast<QTreeWidget*>(nullptr), QStringList()
-        << "int" << QStringLiteral("port%1").arg(ui->ports->topLevelItemCount())};
+        << type << name};
     ui->ports->addTopLevelItem(port);
     port->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+}
+
+void PortEditor::addNewPort(){
+    addPort("int", QStringLiteral("port%1").arg(ui->ports->topLevelItemCount()));
 }
 
 void PortEditor::removeCurrentPort(){

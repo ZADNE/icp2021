@@ -21,11 +21,14 @@ public:
     explicit TabEditor(QWidget *parent = nullptr);
     ~TabEditor();
 
-
     QLabel& getNoTabLabel();
 
+signals:
+    void saveWork();
+
 public slots:
-    void editFile(QString path);
+    bool createFolder(QString path);
+    bool editFile(QString path);//Creates it if it does not exist
     bool renameFile(QString oldFilePath, QString newFilePath);
     bool deleteFile(QString path);
     bool renameFolder(QString path, QString oldName, QString newName);
@@ -34,17 +37,15 @@ public slots:
     void closeAllTabs();
     void checkTabValidity();
 
-signals:
-    void saveWork();
+protected slots:
+    void closeTab(int index);
 
 private:
     Ui::TabEditor *ui;
 
     void addNoTab();
 
-    std::unordered_map<QString, BlockEditor*> tabs;
-protected slots:
-    void closeTab(int index);
+    std::unordered_map<QString, BlockEditor*> m_tabs;
 };
 
 #endif // TABEDITOR_H

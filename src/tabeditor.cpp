@@ -29,15 +29,20 @@ QLabel& TabEditor::getNoTabLabel(){
     return *ui->no_block_label;
 }
 
-void TabEditor::editFile(QString path){
-    //Check if it is not open already
+bool TabEditor::createFolder(QString path){
     QFileInfo fi{path};
-    path = fi.canonicalFilePath();
-    auto it = tabs.find(path);
-    if (it != tabs.end()){
+    return QDir{fi.path()}.mkdir(fi.fileName());
+}
+
+bool TabEditor::editFile(QString path){
+    QFileInfo fi{path};
+    path = fi.absoluteFilePath();
+    //Check if it is not open already
+    auto it = m_tabs.find(path);
+    if (it != m_tabs.end()){
         //This path is already open, switch to it
         ui->tabs->setCurrentWidget(it->second);
-        return;
+        return true;
     }
     //Path is not open yet, open it
     BlockEditor* page;
@@ -48,10 +53,10 @@ void TabEditor::editFile(QString path){
     } else if (fi.suffix() == "comp") {
         page = new CompEditor{};
     } else {
-        return;
+        return false;
     }
-    page->setFilePath(path);
-    tabs.insert({path, page});
+    page->setFilePath(path, true);
+    m_tabs.insert({path, page});
     //Remove no-block tab (if it is there)
     int index = ui->tabs->indexOf(ui->no_block);
     if (index != -1){
@@ -60,6 +65,7 @@ void TabEditor::editFile(QString path){
     //Add new tab and set it current
     ui->tabs->addTab(page, icon, label);
     ui->tabs->setCurrentWidget(page);
+    return true;
 }
 
 bool TabEditor::renameFile(QString oldFilePath, QString newFilePath){
@@ -69,17 +75,17 @@ bool TabEditor::renameFile(QString oldFilePath, QString newFilePath){
         return false;
     }
     //Rename tab
-    auto it = tabs.find(oldFilePath);
-    if (it != tabs.end()){
+    auto it = m_tabs.find(oldFilePath);
+    if (it != m_tabs.end()){
         //Reinsert page with new path
         auto* page = it->second;
-        tabs.erase(it);
-        tabs.insert({newFilePath, page});
+        m_tabs.erase(it);
+        m_tabs.insert({newFilePath, page});
         //Change tab text
         ui->tabs->setTabText(ui->tabs->indexOf(page),
                 QFileInfo{newFilePath}.completeBaseName());
         //And inform editor of new path
-        page->setFilePath(newFilePath);
+        page->setFilePath(newFilePath, false);
     }
     return true;
 }
@@ -90,11 +96,11 @@ bool TabEditor::deleteFile(QString path){
         return false;
     }
     //Close tab
-    auto it = tabs.find(path);
-    if (it != tabs.end()){
+    auto it = m_tabs.find(path);
+    if (it != m_tabs.end()){
         ui->tabs->removeTab(ui->tabs->indexOf(it->second));
         delete it->second;
-        tabs.erase(it);
+        m_tabs.erase(it);
     }
     addNoTab();
     return true;
@@ -107,7 +113,7 @@ bool TabEditor::renameFolder(QString path, QString oldName, QString newName){
         return false;
     }
     //Redirect tabs
-    for (auto it = tabs.begin(); it != tabs.end(); ){
+    for (auto it = m_tabs.begin(); it != m_tabs.end(); ){
         auto tabPath = it->first;
         int prevIndex = tabPath.lastIndexOf('/', -1);
         int index;
@@ -118,11 +124,11 @@ bool TabEditor::renameFolder(QString path, QString oldName, QString newName){
                 && tabPath.leftRef(index) == path){//And it is in correct path - replace name
                 //Reinsert page
                 auto* page = it->second;
-                it = tabs.erase(it);
+                it = m_tabs.erase(it);
                 QString newPath = path + "/" + newName + tabPath.midRef(prevIndex + 1, -1);
-                tabs.insert({newPath, page});
+                m_tabs.insert({newPath, page});
                 //Inform page of new path
-                page->setFilePath(newPath);
+                page->setFilePath(newPath, false);
                 matchFound = true;
                 break;
             }
@@ -143,12 +149,12 @@ bool TabEditor::deleteFolder(QString path){
         return false;
     }
     //Close tabs
-    for (auto it = tabs.begin(); it != tabs.end(); ){
+    for (auto it = m_tabs.begin(); it != m_tabs.end(); ){
         QFileInfo fi{it->first};
         if (!fi.exists()){
             ui->tabs->removeTab(ui->tabs->indexOf(it->second));
             delete it->second;
-            it = tabs.erase(it);
+            it = m_tabs.erase(it);
         } else {
             ++it;
         }
@@ -164,10 +170,10 @@ void TabEditor::closeAllTabs(){
     }
     //Close all tabs
     ui->tabs->clear();
-    auto it = tabs.begin();
-    while (it != tabs.end()){
+    auto it = m_tabs.begin();
+    while (it != m_tabs.end()){
         delete it->second;
-        it = tabs.erase(it);
+        it = m_tabs.erase(it);
     }
     //Add no-tab
     addNoTab();
@@ -189,10 +195,10 @@ void TabEditor::closeTab(int index){
         return;//Do not delete no-tab
     }
     //Remove it from tabs table
-    auto it = tabs.begin();
-    while (it != tabs.end()){
+    auto it = m_tabs.begin();
+    while (it != m_tabs.end()){
         if (it->second == page){
-            tabs.erase(it);
+            m_tabs.erase(it);
             break;
         }
         ++it;

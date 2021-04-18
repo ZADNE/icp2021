@@ -35,7 +35,7 @@ signals:
 private:
     Ui::LibraryExplorer* ui;
 
-    QString libPath;
+    QString m_libPath;
 
     void addDir(QTreeWidgetItem* parent, QString path);
     QTreeWidgetItem* addItem(QTreeWidgetItem* parent, QFileInfo fi);
@@ -44,8 +44,8 @@ private:
     QString currentPath();
     QString path(QTreeWidgetItem* item, int column);
 
-    QMenu menuFolder;
-    QMenu menuFile;
+    QMenu m_menuFolder;
+    QMenu m_menuFile;
 private slots:
     void viewItemDoubleclicked(QTreeWidgetItem *item, int column);
     void contextMenu(const QPoint &point);

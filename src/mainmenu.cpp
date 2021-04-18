@@ -46,10 +46,10 @@ MainMenu::~MainMenu(){
 void MainMenu::openLibrary(QString libpath){
     QFileInfo fi = QFileInfo{libpath};
     if (fi.isDir()){
-        lib = fi;
+        m_lib = fi;
         ui->tabEditor->closeAllTabs();
         updateNoTabLabel();
-        ui->libraryExplorer->loadLibrary(lib.canonicalFilePath());
+        ui->libraryExplorer->loadLibrary(m_lib.canonicalFilePath());
     }
 }
 
@@ -70,8 +70,16 @@ void MainMenu::on_actionExit_triggered(){
 void MainMenu::addNew(QString path){
     NewFileDialog f{this, path};
     if (f.exec()){
-        //NewFileResult r = f.getResult();
-        qDebug() << f.getResult().path;
+        NewFileRequest r = f.getResult();
+        bool success = false;
+        if (r.type == FileType::dir){
+            success = ui->tabEditor->createFolder(r.path);
+        } else {
+            success = ui->tabEditor->editFile(r.path);
+        }
+        if (success){
+            ui->libraryExplorer->reloadLibrary();
+        }
     }
 }
 
@@ -79,7 +87,7 @@ void MainMenu::renameThis(QString path){
     QFileInfo fi{path};
     if (fi.isDir()){
         //Renaming directory
-        bool renamingLib = fi == lib;
+        bool renamingLib = fi == m_lib;
         QString newName = renameDialog(renamingLib ? tr("library"): tr("folder"), fi.fileName());
         if (!newName.isEmpty()){
             if (ui->tabEditor->renameFolder(fi.path(), fi.fileName(),
@@ -151,7 +159,7 @@ int MainMenu::deleteQuestion(QString title, QString text, QString path){
 
 void MainMenu::updateNoTabLabel(){
     QString text = "<font  size=\"6\">No block is open for editing.</font><br>";
-    if (lib.exists()){
+    if (m_lib.exists()){
         text += "<font  size=\"4\">&gt; Open a block from library on the left.</font><br>";;
     } else {
         text += "<font  size=\"4\">&gt; Open a library from top menu bar.</font><br>";

@@ -5,6 +5,7 @@
 #define ATOMEDITOR_H
 
 #include <QWidget>
+#include <QTreeWidgetItem>
 
 #include "blockeditor.h"
 
@@ -17,14 +18,12 @@ class AtomEditor: public BlockEditor{
 
 public:
     explicit AtomEditor(QWidget *parent = nullptr);
-    ~AtomEditor();
+    ~AtomEditor() override;
 
-signals:
-    void unsavedChange();
-    void saved();
-
-public slots:
-    void saveWork();
+protected:
+    void load() override;
+    void save() override;
+    void compile() override;
 
 
 private:
