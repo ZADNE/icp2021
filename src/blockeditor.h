@@ -20,8 +20,8 @@ public:
     bool hasUnsavedChanges() { return m_unsavedChanges; }
 
 signals:
-    void unsavedChanges();
-    void savedChanges();
+    void havingUnsavedChanges(BlockEditor* editor);
+    void withoutUnsavedChanges(BlockEditor* editor);
 
 public slots:
     virtual void saveWork() final;

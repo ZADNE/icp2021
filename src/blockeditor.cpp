@@ -28,6 +28,7 @@ void BlockEditor::setFilePath(QString filePath, bool loadFile){
                 save();
             }
         }
+        m_unsavedChanges = false;
     }
 }
 
@@ -40,7 +41,7 @@ void BlockEditor::saveWork(){
     if (m_unsavedChanges == true && m_fileInfo.exists()){
         m_unsavedChanges = false;
         save();
-        emit savedChanges();
+        emit withoutUnsavedChanges(this);
     }
 }
 
@@ -52,6 +53,6 @@ void BlockEditor::buildWork(){
 void BlockEditor::editedWork(){
     if (m_unsavedChanges == false){
         m_unsavedChanges = true;
-        emit unsavedChanges();
+        emit havingUnsavedChanges(this);
     }
 }

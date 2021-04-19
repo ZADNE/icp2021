@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <unordered_map>
 
-#include "blockeditor.h"
+class BlockEditor;
 
 namespace Ui {
 class TabEditor;
@@ -39,6 +39,8 @@ public slots:
 
 protected slots:
     void closeTab(int index);
+    void havingUnsavedChanges(BlockEditor* editor);
+    void withoutUnsavedChanges(BlockEditor* editor);
 
 private:
     Ui::TabEditor *ui;

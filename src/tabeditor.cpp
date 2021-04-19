@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QDebug>
 
+#include "blockeditor.h"
 #include "atomeditor.h"
 #include "compeditor.h"
 
@@ -55,6 +56,10 @@ bool TabEditor::editFile(QString path){
     } else {
         return false;
     }
+    connect(page, &BlockEditor::havingUnsavedChanges,
+            this, &TabEditor::havingUnsavedChanges);
+    connect(page, &BlockEditor::withoutUnsavedChanges,
+            this, &TabEditor::withoutUnsavedChanges);
     page->setFilePath(path, true);
     m_tabs.insert({path, page});
     //Remove no-block tab (if it is there)
@@ -206,4 +211,22 @@ void TabEditor::closeTab(int index){
     //Delete the page
     delete page;
     addNoTab();
+}
+
+void TabEditor::havingUnsavedChanges(BlockEditor* editor){
+    int i = ui->tabs->indexOf(editor);
+    if (i == -1) return;
+    auto tabText = ui->tabs->tabText(i);
+    if (!tabText.endsWith("*")){
+        ui->tabs->setTabText(i, tabText + "*");
+    }
+}
+
+void TabEditor::withoutUnsavedChanges(BlockEditor* editor){
+    int i = ui->tabs->indexOf(editor);
+    if (i == -1) return;
+    auto tabText = ui->tabs->tabText(i);
+    if (tabText.endsWith("*")){
+        ui->tabs->setTabText(i, tabText.left(tabText.size() - 1));
+    }
 }
