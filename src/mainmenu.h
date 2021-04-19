@@ -36,11 +36,10 @@ protected slots:
 private:
     Ui::MainMenu *ui;
 
-    QFileInfo m_lib;
-
     QString renameDialog(QString what, QString oldName);
     int deleteQuestion(QString title, QString text, QString path);
     void updateNoTabLabel();
 
+    QFileInfo m_lib;
 };
 #endif // MAINMENU_H

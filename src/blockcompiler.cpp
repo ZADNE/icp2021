@@ -6,6 +6,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include "rapidxml/rapidxml_utils.hpp"
+
 #include <QDebug>
 
 //Helper functions
@@ -15,13 +17,67 @@ BlockCompiler::BlockCompiler(){
 
 }
 
+void BlockCompiler::setCppCompiler(std::string compiler){
+    m_cppCompiler = compiler + ' ';
+}
+
+bool BlockCompiler::buildAtom(const std::string& atomPath){
+    AtomSpec atom;
+    try {
+        if (!readAtom(atomPath, atom)) return false;
+    }  catch (rapidxml::parse_error) {
+        return false;
+    }  catch (std::runtime_error) {
+        return false;
+    }
+    std::string headerPath = atomPath + ".h";
+    return buildAtom(headerPath, atom);
+}
+
+bool BlockCompiler::readAtom(const std::string& atomPath, AtomSpec& atom){
+    std::ifstream is{atomPath};
+    rapidxml::file<char> file(is);
+    rapidxml::xml_document<char> doc;
+    doc.parse<0>(file.data());
+    //Atom
+    auto* node = doc.first_node();
+    if (!node) return false;
+    if (strcmp(node->name(), "ATOM") != 0) return false;
+    //Name
+    auto* attr = node->first_attribute();
+    if (!attr) return false;
+    if (strcmp(attr->name(), "NAME") != 0) return false;
+    atom.name = attr->value();
+    //Input ports
+    if (!(node = node->first_node())) return false;
+    if (strcmp(node->name(), "INPUT_PORTS") != 0) return false;
+    if (!readPorts(node->first_node(), atom.inputs)) return false;
+    //Output ports
+    if (!(node = node->next_sibling())) return false;
+    if (strcmp(node->name(), "OUTPUT_PORTS") != 0) return false;
+    if (!readPorts(node->first_node(), atom.outputs)) return false;
+    //Function body
+    if (!(node = node->next_sibling())) return false;
+    if (strcmp(node->name(), "FUNCTION_BODY") != 0) return false;
+    atom.body = node->value();
+    return true;
+}
+
+bool BlockCompiler::readPorts(rapidxml::xml_node<char>* node, SlotList& sl){
+    while (node){
+        sl.emplace_back(node->value(), node->name());
+        node = node->next_sibling();
+    }
+    return true;
+}
+
 BlockCompiler& BlockCompiler::bc(){
     static BlockCompiler bc;
     return bc;
 }
 
-bool BlockCompiler::buildAtom(const std::string& filePath, const AtomSpec& atom){
-    std::ofstream o{filePath, std::ofstream::out | std::ofstream::trunc};
+bool BlockCompiler::buildAtom(const std::string& headerPath, const AtomSpec& atom){
+    std::ofstream o{headerPath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create file :-/
     std::string guard = atom.name;
     toGuard(guard);
@@ -57,18 +113,17 @@ bool BlockCompiler::buildAtom(const std::string& filePath, const AtomSpec& atom)
     o << "#endif //!" << guard << std::endl;
     o.close();
 
-    std::string command = "g++ " + filePath;
-    int ec = std::system(command.c_str());
-    qDebug() << ec;
+    std::string command = m_cppCompiler + headerPath;
+    qDebug() << std::system(command.c_str());
     return true;
 }
 
 bool BlockCompiler::openLibrary(const char* path){
     m_libPath = path;
-    return checkHeader();
+    return checkLibraryHeaderHeader();
 }
 
-bool BlockCompiler::checkHeader(){
+bool BlockCompiler::checkLibraryHeaderHeader(){
     auto headerPath = m_libPath + "/block.h";
     std::ifstream i{headerPath};
     if (i.good()) {

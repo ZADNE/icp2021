@@ -1,2 +1,5 @@
-# icp2021
-ICP 2021 projekt
+# BlockCreator
+ICP 2021 semestrální projekt
+
+Použité knihovny (krom Qt):
+rapidxml @ http://rapidxml.sourceforge.net/

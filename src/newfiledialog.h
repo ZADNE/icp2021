@@ -36,12 +36,11 @@ public:
 private:
     Ui::NewFileDialog *ui;
 
-    QString m_workDir;
+    QString constructFilePath();
 
+    QString m_workDir;
     bool m_fileValid = false;
     FileType m_type = FileType::none;
-
-    QString constructFilePath();
 
 private slots:
     void validate();

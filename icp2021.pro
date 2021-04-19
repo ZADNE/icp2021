@@ -29,7 +29,11 @@ HEADERS += \
     src/mainmenu.h \
     src/newfiledialog.h \
     src/porteditor.h \
-    src/tabeditor.h
+    src/tabeditor.h \
+    src/rapidxml/rapidxml.hpp \
+    src/rapidxml/rapidxml_iterators.hpp \
+    src/rapidxml/rapidxml_print.hpp \
+    src/rapidxml/rapidxml_utils.hpp
 
 FORMS += \
     src/atomeditor.ui \

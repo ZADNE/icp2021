@@ -86,18 +86,7 @@ void AtomEditor::save(){
 }
 
 void AtomEditor::build(){
-    //Construct specification
-    AtomSpec spec;
-    //Block name
-    spec.name = ui->nameEditor->text().toStdString();
-    //Function body
-    spec.body = ui->codeEditor->toPlainText().toStdString();
-    //Input ports
-    spec.inputs = extractPorts(ui->inputEditor);
-    //Output ports
-    spec.outputs = extractPorts(ui->outputEditor);
-    //Build using specification
-    BlockCompiler::bc().buildAtom((filePath() + ".h").toStdString(), spec);
+    BlockCompiler::bc().buildAtom(filePath().toStdString());
 }
 
 void writePortsToXML(PortEditor* pe, QXmlStreamWriter &out) {
