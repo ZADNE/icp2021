@@ -29,7 +29,7 @@ signals:
 public slots:
     void contextMenu(const QPoint &point);
 
-    void addVariable(QString type, QString name);
+    void addVariable(bool templ, QString type, QString name);
     void addNewVariable();
     void removeCurrentVariable();
 

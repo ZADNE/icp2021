@@ -12,6 +12,8 @@ VariableEditor::VariableEditor(QWidget *parent):
 {
     ui->setupUi(this);
 
+    ui->vars->setColumnWidth(0, 40);
+
     connect(ui->vars, &QTreeWidget::customContextMenuRequested,
             this, &VariableEditor::contextMenu);
     connect(ui->actionAdd_new_port, &QAction::triggered,
@@ -46,15 +48,16 @@ void VariableEditor::contextMenu(const QPoint &point){
     }
 }
 
-void VariableEditor::addVariable(QString type, QString name){
+void VariableEditor::addVariable(bool templ, QString type, QString name){
     auto* port = new QTreeWidgetItem{static_cast<QTreeWidget*>(nullptr), QStringList()
-        << type << name};
+        << "" << type << name};
     ui->vars->addTopLevelItem(port);
-    port->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    port->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+    port->setCheckState(0,  templ ? Qt::Checked : Qt::Unchecked);
 }
 
 void VariableEditor::addNewVariable(){
-    addVariable("int", QStringLiteral("port%1").arg(ui->vars->topLevelItemCount()));
+    addVariable(false, "int", QStringLiteral("port%1").arg(ui->vars->topLevelItemCount()));
 }
 
 void VariableEditor::removeCurrentVariable(){

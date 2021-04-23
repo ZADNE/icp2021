@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <algorithm>
+#include <set>
 
 #include "rapidxml/rapidxml_utils.hpp"
 
@@ -30,7 +31,7 @@ bool BlockCompiler::buildAtom(const std::string& atomPath){
     }  catch (std::runtime_error) {
         return false;
     }
-    std::string headerPath = atomPath + ".h";
+    std::string headerPath = atomPath + ".hpp";
     return buildAtom(headerPath, atom);
 }
 
@@ -69,7 +70,14 @@ bool BlockCompiler::readAtom(const std::string& atomPath, AtomSpec& atom){
 
 bool BlockCompiler::extractPorts(rapidxml::xml_node<char>* node, SlotList& sl){
     while (node){
-        sl.emplace_back(node->value(), node->name());
+        bool templ = false;
+        auto* attr = node->first_attribute();
+        if (attr
+            && strcmp(attr->name(), "TEMPLATE") == 0
+            && strcmp(attr->value(), "TRUE") == 0){
+            templ = true;
+        }
+        sl.emplace_back(templ, node->name(), node->value());
         node = node->next_sibling();
     }
     return true;
@@ -82,13 +90,32 @@ BlockCompiler& BlockCompiler::bc(){
 
 bool BlockCompiler::buildAtom(const std::string& headerPath, const AtomSpec& atom){
     std::ofstream o{headerPath, std::ofstream::trunc};
-    if (!o.good()) return false;//Cannot create file :-/
+    if (!o.good()) return false;//Cannot create the file :-/
     std::string guard = atom.name;
     toGuard(guard);
     //Macro guard
     o << "#ifndef " << guard << std::endl;
     o << "#define " << guard << std::endl;
-    o << "#include \"block.h\"\n";
+    o << "#include \"block.hpp\"\n";
+    //Templates
+    std::set<std::string> templates;
+    for (auto& slot: atom.inputs){
+        if (slot.templ) templates.insert(slot.type);
+    }
+    for (auto& slot: atom.outputs){
+        if (slot.templ) templates.insert(slot.type);
+    }
+    if (!templates.empty()){
+        o << "template<";
+        auto it = templates.begin();
+        o << "typename " << *it;
+        ++it;
+        while (it != templates.end()){
+            o << ", typename " << *it;
+            ++it;
+        }
+        o << '>';
+    }
     //Class
     o << "class " << atom.name << ": public ____Block{\n";
     o << "public:\n";
@@ -131,7 +158,7 @@ bool BlockCompiler::openLibrary(const char* path){
 }
 
 bool BlockCompiler::checkLibraryHeaderHeader(){
-    auto headerPath = m_libPath + "/block.h";
+    auto headerPath = m_libPath + "/block.hpp";
     std::ifstream i{headerPath};
     if (i.good()) {
         //Header already exists
@@ -187,7 +214,7 @@ bool BlockCompiler::checkLibraryHeaderHeader(){
         "\n"
         "protected:\n"
         "    void putValue(const T& value){\n"
-        "        if (p_queue.empty()){\n"
+        "        if (p_queue.empty() && !p_constValue){\n"
         "            *p_changed = true;\n"
         "        }\n"
         "        p_queue.push(value);\n"

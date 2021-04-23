@@ -13,7 +13,6 @@
 //Helper functions
 void writeVariablesToXML(VariableEditor* ve, QXmlStreamWriter &out);
 void readVariablesFromXML(VariableEditor* ve, QXmlStreamReader &in);
-SlotList extractPorts(VariableEditor* ve);
 
 AtomEditor::AtomEditor(QWidget *parent):
     BlockEditor(parent),
@@ -101,27 +100,20 @@ void AtomEditor::build(){
 void writeVariablesToXML(VariableEditor* ve, QXmlStreamWriter &out) {
     auto it = ve->iterator();
     while (*it){
-        out.writeTextElement((*it)->text(1), (*it)->text(0));
+        out.writeStartElement((*it)->text(1));
+        out.writeAttribute("TEMPLATE", ((*it)->checkState(0) == Qt::Checked ? "TRUE" : "FALSE"));
+        out.writeCharacters((*it)->text(2));
+        out.writeEndElement();
         ++it;
     }
 }
 
 void readVariablesFromXML(VariableEditor* ve, QXmlStreamReader &in){
     while (in.readNextStartElement()){
-        ve->addVariable(in.readElementText(), in.name().toString());
+        bool templ = false;
+        if (in.attributes().value("TEMPLATE") == "TRUE"){
+            templ = true;
+        }
+        ve->addVariable(templ, in.name().toString(), in.readElementText());
     }
-}
-
-SlotList extractPorts(VariableEditor* ve){
-    SlotList sl;
-    sl.reserve(ve->count());
-    auto it = ve->iterator();
-    while (*it){
-        SlotSpec ss;
-        ss.type = (*it)->text(0).toStdString();
-        ss.name = (*it)->text(1).toStdString();
-        sl.push_back(ss);
-        ++it;
-    }
-    return sl;
 }

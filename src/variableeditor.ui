@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>256</width>
-    <height>192</height>
+    <width>262</width>
+    <height>206</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -43,6 +43,20 @@
      <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
+     <attribute name="headerDefaultSectionSize">
+      <number>80</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Tmpl</string>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string>Type</string>

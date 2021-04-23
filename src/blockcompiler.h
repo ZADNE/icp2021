@@ -12,9 +12,10 @@ namespace rapidxml {
 
 struct SlotSpec{
     SlotSpec(){}
-    SlotSpec(std::string type, std::string name):
-        type(type), name(name) {};
+    SlotSpec(bool templ, std::string type, std::string name):
+        templ(templ), type(type), name(name) {};
 
+    bool templ;
     std::string type;
     std::string name;
 };
