@@ -11,9 +11,9 @@
 #include "blockcompiler.h"
 
 //Helper functions
-void writePortsToXML(PortEditor* pe, QXmlStreamWriter &out);
-void readPortsFromXML(PortEditor* pe, QXmlStreamReader &in);
-SlotList extractPorts(PortEditor* pe);
+void writeVariablesToXML(VariableEditor* ve, QXmlStreamWriter &out);
+void readVariablesFromXML(VariableEditor* ve, QXmlStreamReader &in);
+SlotList extractPorts(VariableEditor* ve);
 
 AtomEditor::AtomEditor(QWidget *parent):
     BlockEditor(parent),
@@ -21,11 +21,13 @@ AtomEditor::AtomEditor(QWidget *parent):
 {
     ui->setupUi(this);
 
-    connect(ui->inputEditor, &PortEditor::edited,
+    connect(ui->inputEditor, &VariableEditor::edited,
             this, &AtomEditor::editedWork);
-    connect(ui->outputEditor, &PortEditor::edited,
+    connect(ui->outputEditor, &VariableEditor::edited,
             this, &AtomEditor::editedWork);
     connect(ui->codeEditor, &QTextEdit::textChanged,
+            this, &AtomEditor::editedWork);
+    connect(ui->stateVarEditor, &QTextEdit::textChanged,
             this, &AtomEditor::editedWork);
     connect(ui->nameEditor, &QLineEdit::textChanged,
             this, &AtomEditor::editedWork);
@@ -47,15 +49,19 @@ void AtomEditor::load(){
         ui->nameEditor->setText(in.attributes().value("NAME").toString());
         if (!in.readNextStartElement()) return;
         if (in.name() == "INPUT_PORTS"){
-            readPortsFromXML(ui->inputEditor, in);
+            readVariablesFromXML(ui->inputEditor, in);
         }
         if (!in.readNextStartElement()) return;
         if (in.name() == "OUTPUT_PORTS"){
-            readPortsFromXML(ui->outputEditor, in);
+            readVariablesFromXML(ui->outputEditor, in);
         }
         if (!in.readNextStartElement()) return;
         if (in.name() == "FUNCTION_BODY"){
             ui->codeEditor->setText(in.readElementText());
+        }
+        if (!in.readNextStartElement()) return;
+        if (in.name() == "STATE_VARIABLES"){
+            ui->stateVarEditor->setText(in.readElementText());
         }
     }
     file.close();
@@ -72,13 +78,16 @@ void AtomEditor::save(){
         out.writeStartElement("ATOM");
             out.writeAttribute("NAME", ui->nameEditor->text());
             out.writeStartElement("INPUT_PORTS");
-                writePortsToXML(ui->inputEditor, out);
+                writeVariablesToXML(ui->inputEditor, out);
             out.writeEndElement();
             out.writeStartElement("OUTPUT_PORTS");
-                writePortsToXML(ui->outputEditor, out);
+                writeVariablesToXML(ui->outputEditor, out);
             out.writeEndElement();
             out.writeStartElement("FUNCTION_BODY");
                 out.writeCharacters(ui->codeEditor->toPlainText());
+            out.writeEndElement();
+            out.writeStartElement("STATE_VARIABLES");
+                out.writeCharacters(ui->stateVarEditor->toPlainText());
             out.writeEndElement();
         out.writeEndElement();
     out.writeEndDocument();
@@ -89,24 +98,24 @@ void AtomEditor::build(){
     BlockCompiler::bc().buildAtom(filePath().toStdString());
 }
 
-void writePortsToXML(PortEditor* pe, QXmlStreamWriter &out) {
-    auto it = pe->iterator();
+void writeVariablesToXML(VariableEditor* ve, QXmlStreamWriter &out) {
+    auto it = ve->iterator();
     while (*it){
         out.writeTextElement((*it)->text(1), (*it)->text(0));
         ++it;
     }
 }
 
-void readPortsFromXML(PortEditor* pe, QXmlStreamReader &in){
+void readVariablesFromXML(VariableEditor* ve, QXmlStreamReader &in){
     while (in.readNextStartElement()){
-        pe->addPort(in.readElementText(), in.name().toString());
+        ve->addVariable(in.readElementText(), in.name().toString());
     }
 }
 
-SlotList extractPorts(PortEditor* pe){
+SlotList extractPorts(VariableEditor* ve){
     SlotList sl;
-    sl.reserve(pe->count());
-    auto it = pe->iterator();
+    sl.reserve(ve->count());
+    auto it = ve->iterator();
     while (*it){
         SlotSpec ss;
         ss.type = (*it)->text(0).toStdString();

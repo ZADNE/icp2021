@@ -17,8 +17,8 @@ SOURCES += \
     src/main.cpp \
     src/mainmenu.cpp \
     src/newfiledialog.cpp \
-    src/porteditor.cpp \
-    src/tabeditor.cpp
+    src/tabeditor.cpp \
+    src/variableeditor.cpp
 
 HEADERS += \
     src/atomeditor.h \
@@ -28,12 +28,12 @@ HEADERS += \
     src/libraryexplorer.h \
     src/mainmenu.h \
     src/newfiledialog.h \
-    src/porteditor.h \
     src/tabeditor.h \
     src/rapidxml/rapidxml.hpp \
     src/rapidxml/rapidxml_iterators.hpp \
     src/rapidxml/rapidxml_print.hpp \
-    src/rapidxml/rapidxml_utils.hpp
+    src/rapidxml/rapidxml_utils.hpp \
+    src/variableeditor.h
 
 FORMS += \
     src/atomeditor.ui \
@@ -41,8 +41,8 @@ FORMS += \
     src/libraryexplorer.ui \
     src/mainmenu.ui \
     src/newfiledialog.ui \
-    src/porteditor.ui \
-    src/tabeditor.ui
+    src/tabeditor.ui \
+    src/variableeditor.ui
 
 TRANSLATIONS += \
     src/icp2021_en_US.ts

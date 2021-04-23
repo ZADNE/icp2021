@@ -19,7 +19,12 @@ MainMenu::MainMenu(QWidget *parent):
     ui(new Ui::MainMenu)  {
     ui->setupUi(this);
 
-    //Connect signals from library explorer
+    //Signals from top menu
+    connect(ui->actionOpenLib, &QAction::triggered,
+            this, &MainMenu::openLibraryDialog);
+    connect(ui->actionExit, &QAction::triggered,
+            this, &MainMenu::exitProgram);
+    //Signals from library explorer
     connect(ui->libraryExplorer, &LibraryExplorer::addNew,
             this, &MainMenu::addNew);
     connect(ui->libraryExplorer, &LibraryExplorer::editFile,
@@ -30,7 +35,7 @@ MainMenu::MainMenu(QWidget *parent):
             this, &MainMenu::renameThis);
     connect(ui->libraryExplorer, &LibraryExplorer::deleteThis,
             this, &MainMenu::deleteThis);
-    //Connect signals to tab editor
+    //Signals to tab editor
     connect(this, &MainMenu::saveWork,
             ui->tabEditor, &TabEditor::saveWork);
 
@@ -57,7 +62,7 @@ void MainMenu::openLibrary(QString libpath){
     }
 }
 
-void MainMenu::on_actionOpenLib_triggered(){
+void MainMenu::openLibraryDialog(){
     QString folderName = QFileDialog::getExistingDirectory(this,
         tr("Open a library"), QDir::currentPath());
 
@@ -66,7 +71,7 @@ void MainMenu::on_actionOpenLib_triggered(){
     }
 }
 
-void MainMenu::on_actionExit_triggered(){
+void MainMenu::exitProgram(){
     emit saveWork();
     QApplication::exit(0);
 }
@@ -162,11 +167,11 @@ int MainMenu::deleteQuestion(QString title, QString text, QString path){
 }
 
 void MainMenu::updateNoTabLabel(){
-    QString text = "<font  size=\"6\">No block is open for editing.</font><br>";
+    QString text = tr("<font  size=\"6\">No block is open for editing.</font><br>");
     if (m_lib.exists()){
-        text += "<font  size=\"4\">&gt; Open a block from library on the left.</font><br>";;
+        text += tr("<font  size=\"4\">&gt; Open a block from library on the left.</font><br>");
     } else {
-        text += "<font  size=\"4\">&gt; Open a library from top menu bar.</font><br>";
+        text += tr("<font  size=\"4\">&gt; Open a library from top menu bar.</font><br>");
     }
     ui->tabEditor->getNoTabLabel().setText(text);
 }

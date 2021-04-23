@@ -37,11 +37,13 @@ QString BlockEditor::filePath() const{
 }
 
 void BlockEditor::saveWork(){
-    m_fileInfo.refresh();
-    if (m_unsavedChanges == true && m_fileInfo.exists()){
-        m_unsavedChanges = false;
-        save();
-        emit withoutUnsavedChanges(this);
+    if (m_unsavedChanges == true){
+        m_fileInfo.refresh();
+        if (m_fileInfo.exists()){
+            m_unsavedChanges = false;
+            save();
+            emit withoutUnsavedChanges(this);
+        }
     }
 }
 

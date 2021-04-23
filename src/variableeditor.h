@@ -1,8 +1,8 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
-#ifndef PORTEDITOR_H
-#define PORTEDITOR_H
+#ifndef VARIABLEEDITOR_H
+#define VARIABLEEDITOR_H
 
 #include <QWidget>
 #include <QMenu>
@@ -12,12 +12,12 @@ namespace Ui {
 class PortEditor;
 }
 
-class PortEditor : public QWidget{
+class VariableEditor : public QWidget{
     Q_OBJECT
 
 public:
-    explicit PortEditor(QWidget *parent = nullptr);
-    ~PortEditor();
+    explicit VariableEditor(QWidget *parent = nullptr);
+    ~VariableEditor();
 
     int count();
 
@@ -29,9 +29,9 @@ signals:
 public slots:
     void contextMenu(const QPoint &point);
 
-    void addPort(QString type, QString name);
-    void addNewPort();
-    void removeCurrentPort();
+    void addVariable(QString type, QString name);
+    void addNewVariable();
+    void removeCurrentVariable();
 
 private:
     Ui::PortEditor* ui;
@@ -40,4 +40,4 @@ private:
     QMenu m_menuSpace;
 };
 
-#endif // PORTEDITOR_H
+#endif // VARIABLEEDITOR_H

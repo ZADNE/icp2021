@@ -1,3 +1,6 @@
+/***
+ * \author Tomas Dubsky (xdubsk08)
+ * */
 #ifndef NEWFILEDIALOG_H
 #define NEWFILEDIALOG_H
 

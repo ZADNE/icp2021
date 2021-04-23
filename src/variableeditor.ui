@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTreeWidget" name="ports">
+    <widget class="QTreeWidget" name="vars">
      <property name="font">
       <font>
        <family>Courier</family>

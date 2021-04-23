@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author
  * */
 #ifndef COMPEDITOR_H
 #define COMPEDITOR_H

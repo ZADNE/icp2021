@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #ifndef MAINMENU_H
 #define MAINMENU_H
@@ -22,16 +22,13 @@ signals:
     void saveWork();
 
 public slots:
+    void openLibraryDialog();
+    void exitProgram();
     void openLibrary(QString libpath);
 
     void addNew(QString path);
     void renameThis(QString path);
     void deleteThis(QString path);
-
-
-protected slots:
-    void on_actionOpenLib_triggered();
-    void on_actionExit_triggered();
 
 private:
     Ui::MainMenu *ui;

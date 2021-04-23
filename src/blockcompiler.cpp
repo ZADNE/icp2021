@@ -51,19 +51,23 @@ bool BlockCompiler::readAtom(const std::string& atomPath, AtomSpec& atom){
     //Input ports
     if (!(node = node->first_node())) return false;
     if (strcmp(node->name(), "INPUT_PORTS") != 0) return false;
-    if (!readPorts(node->first_node(), atom.inputs)) return false;
+    if (!extractPorts(node->first_node(), atom.inputs)) return false;
     //Output ports
     if (!(node = node->next_sibling())) return false;
     if (strcmp(node->name(), "OUTPUT_PORTS") != 0) return false;
-    if (!readPorts(node->first_node(), atom.outputs)) return false;
+    if (!extractPorts(node->first_node(), atom.outputs)) return false;
     //Function body
     if (!(node = node->next_sibling())) return false;
     if (strcmp(node->name(), "FUNCTION_BODY") != 0) return false;
     atom.body = node->value();
+    //State variables
+    if (!(node = node->next_sibling())) return false;
+    if (strcmp(node->name(), "STATE_VARIABLES") != 0) return false;
+    atom.stateVars = node->value();
     return true;
 }
 
-bool BlockCompiler::readPorts(rapidxml::xml_node<char>* node, SlotList& sl){
+bool BlockCompiler::extractPorts(rapidxml::xml_node<char>* node, SlotList& sl){
     while (node){
         sl.emplace_back(node->value(), node->name());
         node = node->next_sibling();
@@ -109,11 +113,14 @@ bool BlockCompiler::buildAtom(const std::string& headerPath, const AtomSpec& ato
     for (auto& output: atom.outputs){
         o << "\t____OutPort<" << output.type << "> " << output.name << ";\n";
     }
+    //State variables
+    o << "private:\n\t";
+    o << atom.stateVars << '\n';
     o << "};\n";
     o << "#endif //!" << guard << std::endl;
     o.close();
 
-    std::string command = m_cppCompiler + headerPath;
+    std::string command = m_cppCompiler + m_cppFlags + headerPath;
     qDebug() << std::system(command.c_str());
     return true;
 }
@@ -145,6 +152,7 @@ bool BlockCompiler::checkLibraryHeaderHeader(){
         "#include <utility>\n"
         "#include <string>\n"
         "#include <iostream>\n"
+        "#include <optional>\n"
         "\n"
         "class ____Block{\n"
         "public:\n"
@@ -159,14 +167,22 @@ bool BlockCompiler::checkLibraryHeaderHeader(){
         "    ____InPort(bool* changed): p_changed(changed){}\n"
         "\n"
         "    bool hasValue() const {\n"
-        "        return static_cast<bool>(p_queue.size());\n"
+        "        if (p_constValue){\n"
+        "            return true;\n"
+        "        } else {\n"
+        "            return static_cast<bool>(p_queue.size());\n"
+        "        }\n"
         "    }\n"
         "\n"
         "    T getValue(){\n"
-        "        *p_changed = true;\n"
-        "        T tmp = p_queue.front();\n"
-        "        p_queue.pop();\n"
-        "        return tmp;\n"
+        "        if (p_constValue){\n"
+        "            return p_constValue.value();\n"
+        "        } else {\n"
+        "            *p_changed = true;\n"
+        "            T tmp = p_queue.front();\n"
+        "            p_queue.pop();\n"
+        "            return tmp;\n"
+        "        }\n"
         "    }\n"
         "\n"
         "protected:\n"
@@ -177,7 +193,12 @@ bool BlockCompiler::checkLibraryHeaderHeader(){
         "        p_queue.push(value);\n"
         "    }\n"
         "\n"
+        "    void setConstValue(const T& value){\n"
+        "        p_constValue = std::make_optional(value);\n"
+        "    }\n"
+        "\n"
         "    std::queue<T> p_queue;\n"
+        "    std::optional<T> p_constValue;\n"
         "    bool* p_changed;\n"
         "};\n"
         "\n"
@@ -208,6 +229,8 @@ bool BlockCompiler::checkLibraryHeaderHeader(){
 
     o.write(header, sizeof(header) - 1);
     o.close();
+    std::string command = m_cppCompiler + m_cppFlags + headerPath;
+    qDebug() << std::system(command.c_str());
     return true;
 }
 

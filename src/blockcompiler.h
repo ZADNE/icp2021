@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #ifndef BLOCKCOMPILER_H
 #define BLOCKCOMPILER_H
@@ -26,6 +26,7 @@ struct AtomSpec{
     SlotList inputs;
     SlotList outputs;
     std::string body;
+    std::string stateVars;
 };
 
 class BlockCompiler{
@@ -44,13 +45,14 @@ protected:
 
 private:
     bool readAtom(const std::string& atomPath, AtomSpec& atom); //Throws rapidxml::parse_error and std::runtime_error
-    bool readPorts(rapidxml::xml_node<char>* node, SlotList& sl);
+    bool extractPorts(rapidxml::xml_node<char>* node, SlotList& sl);
 
     bool buildAtom(const std::string& headerPath, const AtomSpec& atom);
     bool checkLibraryHeaderHeader();
 
     std::string m_libPath;
     std::string m_cppCompiler = "g++ ";
+    std::string m_cppFlags = " -std=c++17 ";
 };
 
 #endif // BLOCKCOMPILER_H
