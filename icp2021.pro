@@ -13,27 +13,34 @@ SOURCES += \
     src/blockcompiler.cpp \
     src/blockeditor.cpp \
     src/compeditor.cpp \
+    src/connectiondesigner.cpp \
     src/libraryexplorer.cpp \
     src/main.cpp \
     src/mainmenu.cpp \
     src/newfiledialog.cpp \
+    src/specstash.cpp \
     src/tabeditor.cpp \
-    src/variableeditor.cpp
+    src/variableeditor.cpp \
+    src/xmlutils.cpp
 
 HEADERS += \
     src/atomeditor.h \
     src/blockcompiler.h \
     src/blockeditor.h \
+    src/blockspec.h \
     src/compeditor.h \
+    src/connectiondesigner.h \
     src/libraryexplorer.h \
     src/mainmenu.h \
     src/newfiledialog.h \
+    src/specstash.h \
     src/tabeditor.h \
     src/rapidxml/rapidxml.hpp \
     src/rapidxml/rapidxml_iterators.hpp \
     src/rapidxml/rapidxml_print.hpp \
     src/rapidxml/rapidxml_utils.hpp \
-    src/variableeditor.h
+    src/variableeditor.h \
+    src/xmlutils.h
 
 FORMS += \
     src/atomeditor.ui \

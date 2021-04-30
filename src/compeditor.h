@@ -1,12 +1,12 @@
 /***
- * \author
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #ifndef COMPEDITOR_H
 #define COMPEDITOR_H
 
-#include <QWidget>
-
 #include "blockeditor.h"
+
+struct CompSpec;
 
 namespace Ui {
 class CompEditor;

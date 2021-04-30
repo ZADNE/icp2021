@@ -6,29 +6,14 @@
 #include <string>
 #include <vector>
 
-namespace rapidxml {
+#include "blockspec.h"
+
+namespace rapidxml{
+    template<class Ch>class xml_document;
     template<class Ch>class xml_node;
 }
-
-struct SlotSpec{
-    SlotSpec(){}
-    SlotSpec(bool templ, std::string type, std::string name):
-        templ(templ), type(type), name(name) {};
-
-    bool templ;
-    std::string type;
-    std::string name;
-};
-
-using SlotList = std::vector<SlotSpec>;
-
-struct AtomSpec{
-    std::string name;
-    SlotList inputs;
-    SlotList outputs;
-    std::string body;
-    std::string stateVars;
-};
+using xml_doc = rapidxml::xml_document<char>;
+using xml_node = rapidxml::xml_node<char>;
 
 class BlockCompiler{
 public:
@@ -36,20 +21,29 @@ public:
     BlockCompiler(BlockCompiler const&) = delete;
     void operator=(BlockCompiler const&) = delete;
 
-    void setCppCompiler(std::string compiler);
+    void setCppCompiler(const std::string& compiler);
 
+    //Atomic blocks
     bool buildAtom(const std::string& atomPath);
+    bool readAtom(const std::string& atomPath, AtomSpec& atom);
+    bool writeAtom(const std::string& atomPath, const AtomSpec& atom);
+    //Composite blocks
+    bool buildComp(const std::string& compPath);
+    bool readComp(const std::string& compPath, CompSpec& comp);
+    bool writeComp(const std::string& compPath, const CompSpec& comp);
 
     bool openLibrary(const char* path);
 protected:
     BlockCompiler();
 
 private:
-    bool readAtom(const std::string& atomPath, AtomSpec& atom); //Throws rapidxml::parse_error and std::runtime_error
-    bool extractPorts(rapidxml::xml_node<char>* node, SlotList& sl);
-
+    //Atomic blocks
     bool buildAtom(const std::string& headerPath, const AtomSpec& atom);
-    bool checkLibraryHeaderHeader();
+    //Composite blocks
+    bool buildComp(const std::string& headerPath, const CompSpec& comp);
+
+    //Library initialization
+    bool initLibrary();
 
     std::string m_libPath;
     std::string m_cppCompiler = "g++ ";

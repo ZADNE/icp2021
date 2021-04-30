@@ -21,7 +21,7 @@ public:
 
     int count();
 
-    QTreeWidgetItemIterator iterator();
+    QTreeWidgetItemIterator iterator() const;
 
 signals:
     void edited();

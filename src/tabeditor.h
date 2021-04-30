@@ -35,8 +35,6 @@ public slots:
     bool deleteFolder(QString path);
 
     void closeAllTabs();
-    void checkTabValidity();
-
 protected slots:
     void closeTab(int index);
     void havingUnsavedChanges(BlockEditor* editor);

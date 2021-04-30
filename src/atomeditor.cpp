@@ -5,14 +5,14 @@
 #include "ui_atomeditor.h"
 
 #include <QDebug>
-#include <QXmlStreamWriter>
-#include <QXmlStreamReader>
+#include <QTreeWidgetItem>
+#include <QTreeWidgetItemIterator>
 
 #include "blockcompiler.h"
 
 //Helper functions
-void writeVariablesToXML(VariableEditor* ve, QXmlStreamWriter &out);
-void readVariablesFromXML(VariableEditor* ve, QXmlStreamReader &in);
+void loadPorts(VariableEditor* ve, const SlotList& sl);
+void savePorts(const VariableEditor* ve, SlotList& sl);
 
 AtomEditor::AtomEditor(QWidget *parent):
     BlockEditor(parent),
@@ -33,87 +33,51 @@ AtomEditor::AtomEditor(QWidget *parent):
 }
 
 AtomEditor::~AtomEditor(){
-    AtomEditor::save();
     delete ui;
 }
 
 void AtomEditor::load(){
-    QFile file{filePath()};
-    if (!file.open(QIODevice::Truncate|QIODevice::ReadOnly|QIODevice::Text))
-        return;
-    //Load file
-    QXmlStreamReader in{&file};
-    if (!in.readNextStartElement()) return;
-    if (in.name() == "ATOM"){
-        ui->nameEditor->setText(in.attributes().value("NAME").toString());
-        if (!in.readNextStartElement()) return;
-        if (in.name() == "INPUT_PORTS"){
-            readVariablesFromXML(ui->inputEditor, in);
-        }
-        if (!in.readNextStartElement()) return;
-        if (in.name() == "OUTPUT_PORTS"){
-            readVariablesFromXML(ui->outputEditor, in);
-        }
-        if (!in.readNextStartElement()) return;
-        if (in.name() == "FUNCTION_BODY"){
-            ui->codeEditor->setText(in.readElementText());
-        }
-        if (!in.readNextStartElement()) return;
-        if (in.name() == "STATE_VARIABLES"){
-            ui->stateVarEditor->setText(in.readElementText());
-        }
-    }
-    file.close();
+    //Read specs
+    auto spec = AtomSpec{};
+    BlockCompiler::bc().readAtom(filePath().toStdString(), spec);
+    //Insert specs to widgets
+    ui->nameEditor->setText(spec.name.c_str());
+    loadPorts(ui->inputEditor, spec.inputs);
+    loadPorts(ui->outputEditor, spec.outputs);
+    ui->codeEditor->setPlainText(spec.body.c_str());
+    ui->stateVarEditor->setPlainText(spec.stateVars.c_str());
 }
 
 void AtomEditor::save(){
-    QFile file{filePath()};
-    if (!file.open(QIODevice::Truncate|QIODevice::WriteOnly|QIODevice::Text))
-        return;
-    QXmlStreamWriter out{&file};
-    out.setAutoFormatting(true);
-    out.setAutoFormattingIndent(2);
-    out.writeStartDocument();
-        out.writeStartElement("ATOM");
-            out.writeAttribute("NAME", ui->nameEditor->text());
-            out.writeStartElement("INPUT_PORTS");
-                writeVariablesToXML(ui->inputEditor, out);
-            out.writeEndElement();
-            out.writeStartElement("OUTPUT_PORTS");
-                writeVariablesToXML(ui->outputEditor, out);
-            out.writeEndElement();
-            out.writeStartElement("FUNCTION_BODY");
-                out.writeCharacters(ui->codeEditor->toPlainText());
-            out.writeEndElement();
-            out.writeStartElement("STATE_VARIABLES");
-                out.writeCharacters(ui->stateVarEditor->toPlainText());
-            out.writeEndElement();
-        out.writeEndElement();
-    out.writeEndDocument();
-    file.close();
+    //Compose specs
+    auto spec = AtomSpec{};
+    spec.name = ui->nameEditor->text().toStdString();
+    savePorts(ui->inputEditor, spec.inputs);
+    savePorts(ui->outputEditor, spec.outputs);
+    spec.body = ui->codeEditor->toPlainText().toStdString();
+    spec.stateVars = ui->stateVarEditor->toPlainText().toStdString();
+    //Write specs
+    BlockCompiler::bc().writeAtom(filePath().toStdString(), spec);
 }
 
 void AtomEditor::build(){
     BlockCompiler::bc().buildAtom(filePath().toStdString());
 }
 
-void writeVariablesToXML(VariableEditor* ve, QXmlStreamWriter &out) {
-    auto it = ve->iterator();
-    while (*it){
-        out.writeStartElement((*it)->text(1));
-        out.writeAttribute("TEMPLATE", ((*it)->checkState(0) == Qt::Checked ? "TRUE" : "FALSE"));
-        out.writeCharacters((*it)->text(2));
-        out.writeEndElement();
-        ++it;
+
+void loadPorts(VariableEditor* ve, const SlotList& sl){
+    for(auto& slot: sl){
+        ve->addVariable(slot.templ, slot.type.c_str(), slot.name.c_str());
     }
 }
 
-void readVariablesFromXML(VariableEditor* ve, QXmlStreamReader &in){
-    while (in.readNextStartElement()){
-        bool templ = false;
-        if (in.attributes().value("TEMPLATE") == "TRUE"){
-            templ = true;
-        }
-        ve->addVariable(templ, in.name().toString(), in.readElementText());
+void savePorts(const VariableEditor* ve, SlotList& sl){
+    auto it = ve->iterator();
+    while (*it){
+        sl.emplace_back(
+            (*it)->checkState(0) == Qt::Checked ? true : false,
+            (*it)->text(1).toStdString(),
+            (*it)->text(2).toStdString());
+        ++it;
     }
 }

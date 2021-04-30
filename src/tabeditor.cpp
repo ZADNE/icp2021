@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDebug>
+#include <QShortcut>
 
 #include "blockeditor.h"
 #include "atomeditor.h"
@@ -20,9 +21,13 @@ TabEditor::TabEditor(QWidget *parent):
 
     connect(ui->tabs, &QTabWidget::tabCloseRequested,
             this, &TabEditor::closeTab);
+
+
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this, SIGNAL(saveWork()));
 }
 
 TabEditor::~TabEditor(){
+    emit saveWork();
     delete ui;
 }
 
@@ -56,6 +61,8 @@ bool TabEditor::editFile(QString path){
     } else {
         return false;
     }
+    connect(this, &TabEditor::saveWork,
+            page, &BlockEditor::saveWork);
     connect(page, &BlockEditor::havingUnsavedChanges,
             this, &TabEditor::havingUnsavedChanges);
     connect(page, &BlockEditor::withoutUnsavedChanges,
@@ -177,15 +184,12 @@ void TabEditor::closeAllTabs(){
     ui->tabs->clear();
     auto it = m_tabs.begin();
     while (it != m_tabs.end()){
+        it->second->saveWork();
         delete it->second;
         it = m_tabs.erase(it);
     }
     //Add no-tab
     addNoTab();
-}
-
-void TabEditor::checkTabValidity(){
-
 }
 
 void TabEditor::addNoTab(){
@@ -203,6 +207,7 @@ void TabEditor::closeTab(int index){
     auto it = m_tabs.begin();
     while (it != m_tabs.end()){
         if (it->second == page){
+            it->second->saveWork();
             m_tabs.erase(it);
             break;
         }

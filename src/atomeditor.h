@@ -4,9 +4,6 @@
 #ifndef ATOMEDITOR_H
 #define ATOMEDITOR_H
 
-#include <QWidget>
-#include <QTreeWidgetItem>
-
 #include "blockeditor.h"
 
 namespace Ui {

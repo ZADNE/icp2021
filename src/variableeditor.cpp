@@ -35,7 +35,7 @@ int VariableEditor::count(){
     return ui->vars->topLevelItemCount();
 }
 
-QTreeWidgetItemIterator VariableEditor::iterator(){
+QTreeWidgetItemIterator VariableEditor::iterator() const {
     return QTreeWidgetItemIterator{ui->vars};
 }
 
