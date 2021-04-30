@@ -27,6 +27,7 @@ struct AtomSpec{
 
 //Instance of a block inside a composite block
 struct InstanceSpec{
+    InstanceSpec(){}
     InstanceSpec(std::string name, std::string path, int x, int y):
         name(name),
         path(path),
@@ -42,6 +43,18 @@ struct InstanceSpec{
 using InstanceList = std::vector<InstanceSpec>;
 
 struct ConnectionSpec{
+    ConnectionSpec(){}
+    ConnectionSpec(
+        std::string from,
+        std::string from_port,
+        std::string to,
+        std::string to_port):
+        from(from),
+        from_port(from_port),
+        to(to),
+        to_port(to_port)
+    {}
+
     std::string from;
     std::string from_port;
     std::string to;
@@ -66,5 +79,12 @@ struct CompSpec{
 };
 
 using BlockSpec = std::variant<AtomSpec, CompSpec>;
+
+struct ApplSpec{
+    std::string name;
+    InstanceList instances;
+    ConnectionList connections;
+    ConstantList constants;
+};
 
 #endif // BLOCKSPEC_H

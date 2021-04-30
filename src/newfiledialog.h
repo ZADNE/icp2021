@@ -16,7 +16,8 @@ enum class FileType{
     none,
     dir,
     atom,
-    comp
+    comp,
+    appl
 };
 
 struct NewFileRequest{

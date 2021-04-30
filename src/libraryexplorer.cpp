@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "libraryexplorer.h"
 #include "ui_libraryexplorer.h"

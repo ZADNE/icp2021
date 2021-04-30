@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "xmlutils.h"
 
@@ -9,7 +9,7 @@
 #include "rapidxml/rapidxml_utils.hpp"
 #include "rapidxml/rapidxml_print.hpp"
 
-bool readAtom(const std::string& atomPath, AtomSpec& atom){
+bool XMLUtils::readAtom(const std::string& atomPath, AtomSpec& atom){
     try {
         std::ifstream is{atomPath};
         rapidxml::file<char> file(is);
@@ -40,7 +40,7 @@ bool readAtom(const std::string& atomPath, AtomSpec& atom){
     }
 }
 
-bool readComp(const std::string& compPath, CompSpec& comp){
+bool XMLUtils::readComp(const std::string& compPath, CompSpec& comp){
     try {
         std::ifstream is{compPath};
         rapidxml::file<char> file(is);
@@ -74,7 +74,35 @@ bool readComp(const std::string& compPath, CompSpec& comp){
     }
 }
 
-bool writeAtom(const std::string& atomPath, const AtomSpec& atom){
+bool XMLUtils::readAppl(const std::string& applPath, ApplSpec& appl){
+    try {
+        std::ifstream is{applPath};
+        rapidxml::file<char> file(is);
+        rapidxml::xml_document<char> doc;
+        doc.parse<0>(file.data());
+        //Comp
+        auto* node = doc.first_node();
+        if (!node || strcmp(node->name(), "APPL") != 0) return false;
+        //Name
+        auto* attr = node->first_attribute();
+        if (!attr || strcmp(attr->name(), "NAME") != 0) return false;
+        appl.name = attr->value();
+        //Instances
+        if (!(node = node->next_sibling()) || strcmp(node->name(), "INSTANCES") != 0) return false;
+        if (!extractInstances(node->first_node(), appl.instances)) return false;
+        //Connections
+        if (!(node = node->next_sibling()) || strcmp(node->name(), "CONNECTIONS") != 0) return false;
+        if (!extractConnections(node->first_node(), appl.connections)) return false;
+        //Constants
+        if (!(node = node->next_sibling()) || strcmp(node->name(), "CONSTANTS") != 0) return false;
+        if (!extractConnections(node->first_node(), appl.connections)) return false;
+        return true;
+    }  catch (...) {
+        return false;
+    }
+}
+
+bool XMLUtils::writeAtom(const std::string& atomPath, const AtomSpec& atom){
     std::ofstream os{atomPath};
     if (os.fail()) return false;
     rapidxml::xml_document<char> doc;
@@ -102,7 +130,7 @@ bool writeAtom(const std::string& atomPath, const AtomSpec& atom){
     return true;
 }
 
-bool writeComp(const std::string& compPath, const CompSpec& comp){
+bool XMLUtils::writeComp(const std::string& compPath, const CompSpec& comp){
     std::ofstream os{compPath};
     if (os.fail()) return false;
     rapidxml::xml_document<char> doc;
@@ -138,7 +166,36 @@ bool writeComp(const std::string& compPath, const CompSpec& comp){
     return true;
 }
 
-void extractPorts(xml_node* node, SlotList& sl){
+
+bool XMLUtils::writeAppl(const std::string& applPath, const ApplSpec& appl){
+    std::ofstream os{applPath};
+    if (os.fail()) return false;
+    rapidxml::xml_document<char> doc;
+    xml_node* node;
+    //Atom
+    auto* atomNode = doc.allocate_node(rapidxml::node_element, "APPL");
+    doc.append_node(atomNode);
+    //Name
+    atomNode->append_attribute(doc.allocate_attribute("NAME", appl.name.c_str()));
+    //Instances
+    node = doc.allocate_node(rapidxml::node_element, "INSTANCES");
+    atomNode->append_node(node);
+    insertInstances(&doc, node, appl.instances);
+    //Connections
+    node = doc.allocate_node(rapidxml::node_element, "CONNECTIONS");
+    atomNode->append_node(node);
+    insertConnections(&doc, node, appl.connections);
+    //Constants
+    node = doc.allocate_node(rapidxml::node_element, "CONSTANTS");
+    atomNode->append_node(node);
+    insertConstants(&doc, node, appl.constants);
+    //Write to file
+    os << doc;
+    os.close();
+    return true;
+}
+
+void XMLUtils::extractPorts(xml_node* node, SlotList& sl){
     while (node){
         bool templ = false;
         auto* attr = node->first_attribute();
@@ -152,7 +209,7 @@ void extractPorts(xml_node* node, SlotList& sl){
     }
 }
 
-bool extractInstances(xml_node* node, InstanceList& il){
+bool XMLUtils::extractInstances(xml_node* node, InstanceList& il){
     while (node){
         //Position
         int x, y;
@@ -169,7 +226,7 @@ bool extractInstances(xml_node* node, InstanceList& il){
     return true;
 }
 
-bool extractConnections(xml_node* node, ConnectionList& cl){
+bool XMLUtils::extractConnections(xml_node* node, ConnectionList& cl){
     ConnectionSpec spec;
     while (node){
         if (strcmp(node->name(), "CONNECTION") != 0) return false;
@@ -196,7 +253,7 @@ bool extractConnections(xml_node* node, ConnectionList& cl){
     return true;
 }
 
-bool extractContants(xml_node* node, ConstantList& cl){
+bool XMLUtils::extractContants(xml_node* node, ConstantList& cl){
     ConstantSpec spec;
     while (node){
         if (strcmp(node->name(), "CONSTANT") != 0) return false;
@@ -219,7 +276,7 @@ bool extractContants(xml_node* node, ConstantList& cl){
     return true;
 }
 
-void insertPorts(xml_doc* doc, xml_node* node, const SlotList& sl){
+void XMLUtils::insertPorts(xml_doc* doc, xml_node* node, const SlotList& sl){
     for(auto& slot: sl){
         auto* slotNode = doc->allocate_node(rapidxml::node_element, slot.name.c_str(), slot.type.c_str());
         slotNode->append_attribute(doc->allocate_attribute("TEMPLATE", slot.templ ? "TRUE": "FALSE"));
@@ -227,7 +284,7 @@ void insertPorts(xml_doc* doc, xml_node* node, const SlotList& sl){
     }
 }
 
-void insertInstances(xml_doc* doc, xml_node* node, const InstanceList& il){
+void XMLUtils::insertInstances(xml_doc* doc, xml_node* node, const InstanceList& il){
     for(auto& inst: il){
         auto* instNode = doc->allocate_node(rapidxml::node_element, inst.name.c_str(), inst.path.c_str());
         instNode->append_attribute(doc->allocate_attribute(
@@ -238,7 +295,7 @@ void insertInstances(xml_doc* doc, xml_node* node, const InstanceList& il){
     }
 }
 
-void insertConnections(xml_doc* doc, xml_node* node, const ConnectionList& cl){
+void XMLUtils::insertConnections(xml_doc* doc, xml_node* node, const ConnectionList& cl){
     for(auto& conn: cl){
         auto* connNode = doc->allocate_node(rapidxml::node_element, "CONNECTION");
         connNode->append_attribute(doc->allocate_attribute("FROM", conn.from.c_str()));
@@ -249,7 +306,7 @@ void insertConnections(xml_doc* doc, xml_node* node, const ConnectionList& cl){
     }
 }
 
-void insertConstants(xml_doc* doc, xml_node* node, const ConstantList& cl){
+void XMLUtils::insertConstants(xml_doc* doc, xml_node* node, const ConstantList& cl){
     for(auto& cnst: cl){
         auto* cnstNode = doc->allocate_node(rapidxml::node_element, "CONSTANT");
         cnstNode->append_attribute(doc->allocate_attribute("VALUE", cnst.value.c_str()));

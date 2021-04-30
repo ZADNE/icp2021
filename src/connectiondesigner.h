@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #ifndef CONNECTIONDESIGNER_H
 #define CONNECTIONDESIGNER_H

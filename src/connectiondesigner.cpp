@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "connectiondesigner.h"
 
@@ -44,7 +44,7 @@ bool ConnectionDesigner::addBlock(QString filePath, QString name, QPoint pos){
     if (!fi.isFile()) return false;
     if (fi.suffix() == "atom"){
         AtomSpec spec;
-        if (!BlockCompiler::bc().readAtom(filePath.toStdString(), spec)) return false;
+        if (!BlockCompiler::get().readAtom(filePath.toStdString(), spec)) return false;
         m_thisBlock->instances.emplace_back(
                     name.toStdString(),
                     filePath.toStdString(),

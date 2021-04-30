@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "mainmenu.h"
 #include "ui_mainmenu.h"
@@ -58,7 +58,7 @@ void MainMenu::openLibrary(QString libpath){
         ui->tabEditor->closeAllTabs();
         updateNoTabLabel();
         ui->libraryExplorer->loadLibrary(m_lib.canonicalFilePath());
-        BlockCompiler::bc().openLibrary(libpath.toUtf8().constData());
+        BlockCompiler::get().openLibrary(libpath.toUtf8().constData());
     }
 }
 

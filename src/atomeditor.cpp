@@ -1,5 +1,5 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "atomeditor.h"
 #include "ui_atomeditor.h"
@@ -39,7 +39,7 @@ AtomEditor::~AtomEditor(){
 void AtomEditor::load(){
     //Read specs
     auto spec = AtomSpec{};
-    BlockCompiler::bc().readAtom(filePath().toStdString(), spec);
+    BlockCompiler::get().readAtom(filePath().toStdString(), spec);
     //Insert specs to widgets
     ui->nameEditor->setText(spec.name.c_str());
     loadPorts(ui->inputEditor, spec.inputs);
@@ -57,11 +57,11 @@ void AtomEditor::save(){
     spec.body = ui->codeEditor->toPlainText().toStdString();
     spec.stateVars = ui->stateVarEditor->toPlainText().toStdString();
     //Write specs
-    BlockCompiler::bc().writeAtom(filePath().toStdString(), spec);
+    BlockCompiler::get().writeAtom(filePath().toStdString(), spec);
 }
 
 void AtomEditor::build(){
-    BlockCompiler::bc().buildAtom(filePath().toStdString());
+    BlockCompiler::get().buildAtom(filePath().toStdString());
 }
 
 

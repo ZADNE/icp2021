@@ -16,8 +16,6 @@ CompEditor::CompEditor(QWidget *parent):
             this, &CompEditor::editedWork);
     connect(ui->outputEditor, &VariableEditor::edited,
             this, &CompEditor::editedWork);
-    connect(ui->includesEditor, &QTextEdit::textChanged,
-            this, &CompEditor::editedWork);
     connect(ui->designer, &ConnectionDesigner::changed,
             this, &CompEditor::editedWork);
     connect(ui->nameEditor, &QLineEdit::textChanged,
@@ -34,9 +32,18 @@ void CompEditor::load(){
 }
 
 void CompEditor::save(){
-    qDebug() << "save " << filePath();
+    //Compose specs
+    auto spec = CompSpec{};
+    spec.name = "Com";
+    spec.inputs.emplace_back(false, "int", "in0");
+    spec.outputs.emplace_back(false, "int", "out0");
+    spec.instances.emplace_back("acc", "acum.atom", 0, 0);
+    spec.connections.emplace_back("", "in0", "acc", "in");
+    spec.connections.emplace_back("acc", "out", "", "out0");
+    //Write specs
+    BlockCompiler::get().writeComp(filePath().toStdString(), spec);
 }
 
 void CompEditor::build(){
-    qDebug() << "build " << filePath();
+    BlockCompiler::get().buildComp(filePath().toStdString());
 }

@@ -1,3 +1,6 @@
+/***
+ * \author Tomas Dubsky (xdubsk08)
+ * */
 #include "newfiledialog.h"
 #include "ui_newfiledialog.h"
 
@@ -44,6 +47,9 @@ void NewFileDialog::typeChosen(QListWidgetItem* item){
     } else if (item->text() == tr("Composite block")){
         m_type = FileType::comp;
         ui->suffix->setText(".comp");
+    } else if (item->text() == tr("Application")){
+        m_type = FileType::appl;
+        ui->suffix->setText(".appl");
     } else {
         m_type = FileType::dir;
         ui->suffix->setText("");

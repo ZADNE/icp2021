@@ -4,9 +4,11 @@
 #ifndef BLOCKCOMPILER_H
 #define BLOCKCOMPILER_H
 #include <string>
-#include <vector>
 
 #include "blockspec.h"
+#include "atomcompiler.h"
+#include "compcompiler.h"
+#include "applcompiler.h"
 
 namespace rapidxml{
     template<class Ch>class xml_document;
@@ -17,9 +19,11 @@ using xml_node = rapidxml::xml_node<char>;
 
 class BlockCompiler{
 public:
-    static BlockCompiler& bc();
+    static BlockCompiler& get();
     BlockCompiler(BlockCompiler const&) = delete;
     void operator=(BlockCompiler const&) = delete;
+
+    bool openLibrary(const char* path);
 
     void setCppCompiler(const std::string& compiler);
 
@@ -31,23 +35,25 @@ public:
     bool buildComp(const std::string& compPath);
     bool readComp(const std::string& compPath, CompSpec& comp);
     bool writeComp(const std::string& compPath, const CompSpec& comp);
+    //Applications
+    bool buildAppl(const std::string& applPath);
+    bool readAppl(const std::string& applPath, ApplSpec& appl);
+    bool writeAppl(const std::string& applPath, const ApplSpec& appl);
 
-    bool openLibrary(const char* path);
 protected:
     BlockCompiler();
 
 private:
-    //Atomic blocks
-    bool buildAtom(const std::string& headerPath, const AtomSpec& atom);
-    //Composite blocks
-    bool buildComp(const std::string& headerPath, const CompSpec& comp);
-
     //Library initialization
     bool initLibrary();
 
     std::string m_libPath;
     std::string m_cppCompiler = "g++ ";
     std::string m_cppFlags = " -std=c++17 ";
+
+    AtomCompiler atomC;
+    CompCompiler compC{m_libPath};
+    ApplCompiler applC{m_libPath};
 };
 
 #endif // BLOCKCOMPILER_H
