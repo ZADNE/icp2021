@@ -11,41 +11,33 @@
 #include <QFileInfo>
 #include <QScrollBar>
 
+#include "blockcompiler.h"
+
 ConnectionDesigner::ConnectionDesigner(QWidget* parent) :
     QGraphicsView(parent),
     m_gScene(new QGraphicsScene(this))
 {
     setAcceptDrops(true);
-    connect(m_gScene, &QGraphicsScene::changed,
-            this, &ConnectionDesigner::changed);
-
     setScene(m_gScene);
-    m_gScene->setSceneRect(QRectF(QPointF(0, 0), size()));
+    //m_gScene->setSceneRect(QRectF(QPointF(0, 0), size()));
+
+    /*connect(m_gScene, &QGraphicsScene::changed,
+            this, &ConnectionDesigner::changed);*/
+
 }
 
 ConnectionDesigner::~ConnectionDesigner(){
 
 }
 
-void ConnectionDesigner::setTarget(QString filePath, CompSpec* comp){
-    m_filePath = filePath;
-    m_thisBlock = comp;
-    reload();
-}
-
-void ConnectionDesigner::reload(){
-
-}
-
 bool ConnectionDesigner::addBlock(QString filePath, QString name, QPoint pos){
-    if (!m_thisBlock) return false; //No target set
     if (filePath == m_filePath) return false; //Cannot add itself
     QFileInfo fi{filePath};
     if (!fi.isFile()) return false;
     if (fi.suffix() == "atom"){
         AtomSpec spec;
         if (!BlockCompiler::get().readAtom(filePath.toStdString(), spec)) return false;
-        m_thisBlock->instances.emplace_back(
+        m_il.emplace_back(
                     name.toStdString(),
                     filePath.toStdString(),
                     pos.x(), pos.y());
@@ -55,14 +47,11 @@ bool ConnectionDesigner::addBlock(QString filePath, QString name, QPoint pos){
     } else {
         return false;
     }
-    //m_block->instances;
-
-    emit changed();
     return true;
 }
 
 void ConnectionDesigner::resizeEvent(QResizeEvent* event){
-    m_gScene->setSceneRect(QRectF(QPointF(0, 0), event->size()));
+    //m_gScene->setSceneRect(QRectF(QPointF(0, 0), event->size()));
 }
 
 void ConnectionDesigner::dragEnterEvent(QDragEnterEvent* event){
@@ -96,7 +85,7 @@ void ConnectionDesigner::dropEvent(QDropEvent* event){
             QMap<int,  QVariant> roleDataMap;
             stream >> dontcare >> dontcare >> roleDataMap;
             QString filePath = roleDataMap[Qt::UserRole].toString();
-            addBlock(filePath, "i" + QString::number(m_thisBlock->instances.size()),event->pos());
+            addBlock(filePath, "i" + QString::number(m_il.size()),event->pos());
         }
     } else {
         event->ignore();

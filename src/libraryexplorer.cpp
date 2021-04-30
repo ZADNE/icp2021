@@ -88,7 +88,7 @@ void LibraryExplorer::actionDelete(){
 
 void LibraryExplorer::addDir(QTreeWidgetItem* parent, QString path){
     QFileInfoList list = QDir{path}.entryInfoList(
-                            {"*.atom", "*.comp"},
+                            {"*.atom", "*.comp", "*.appl"},
                             QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot,
                             QDir::DirsFirst | QDir::Type);
     for (auto& file: list){

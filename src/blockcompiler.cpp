@@ -62,9 +62,9 @@ bool BlockCompiler::writeComp(const std::string& compPath, const CompSpec& comp)
 bool BlockCompiler::buildAppl(const std::string& applPath){
     ApplSpec appl;
     if (!readAppl(applPath, appl)) return false;
-    std::string headerPath = applPath + ".hpp";
+    std::string filePath = applPath + ".cpp";
     try {
-        return applC.buildAppl(headerPath, appl);
+        return applC.buildAppl(filePath, appl);
     }  catch (...) {
         return false;
     }

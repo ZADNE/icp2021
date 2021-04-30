@@ -16,7 +16,7 @@ public:
     void setLibraryPath(std::string libPath);
 
     //May throw
-    bool buildAppl(const std::string& headerPath, const ApplSpec& appl);
+    bool buildAppl(const std::string& filePath, const ApplSpec& appl);
 
 protected:
     ApplCompiler(const std::string& libPath);

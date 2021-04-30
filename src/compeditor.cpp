@@ -6,6 +6,8 @@
 
 #include <QDebug>
 
+#include "blockcompiler.h"
+
 CompEditor::CompEditor(QWidget *parent):
     BlockEditor(parent),
     ui(new Ui::CompEditor)
@@ -27,8 +29,7 @@ CompEditor::~CompEditor(){
 }
 
 void CompEditor::load(){
-    qDebug() << "load " << filePath();
-    //ui->designer->setTarget(filePath(), m_spec);
+    qDebug() << "Comp load " << filePath();
 }
 
 void CompEditor::save(){

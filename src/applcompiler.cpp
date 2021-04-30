@@ -11,17 +11,19 @@ ApplCompiler::ApplCompiler(const std::string& libPath):
 
 }
 
-bool ApplCompiler::buildAppl(const std::string& headerPath, const ApplSpec& appl){
-    std::ofstream o{headerPath, std::ofstream::trunc};
+bool ApplCompiler::buildAppl(const std::string& filePath, const ApplSpec& appl){
+    std::ofstream o{filePath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
     SpecStash ss{m_libPath};
     //Includes
+    o << "#include \"library.hpp\"\n\n";
     BlockBuildUtils::writeInstanceIncludes(o, appl.instances);
     //Class
     o << "class " << appl.name << ": public ____Signaller{\n";
     o << "public:\n";
     o << "\tvoid run(){\n";
     o << "\t\tbool ____changed;\n";
+    o << "\t\tstd::string ____name;\n";
     //Instances
     for (auto& inst: appl.instances){
         auto& instOf = ss[inst.path];
@@ -57,7 +59,7 @@ bool ApplCompiler::buildAppl(const std::string& headerPath, const ApplSpec& appl
     o << "int main(){\n";
     o << '\t' << appl.name << ' ' << "____appl;\n";
     o << "\t____appl.run();\n";
-    o << "\treturn0;\n";
+    o << "\treturn 0;\n";
     o << "}\n";
 
     o.close();

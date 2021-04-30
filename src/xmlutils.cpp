@@ -67,7 +67,7 @@ bool XMLUtils::readComp(const std::string& compPath, CompSpec& comp){
         if (!extractConnections(node->first_node(), comp.connections)) return false;
         //Constants
         if (!(node = node->next_sibling()) || strcmp(node->name(), "CONSTANTS") != 0) return false;
-        if (!extractConnections(node->first_node(), comp.connections)) return false;
+        if (!extractContants(node->first_node(), comp.constants)) return false;
         return true;
     }  catch (...) {
         return false;
@@ -88,14 +88,14 @@ bool XMLUtils::readAppl(const std::string& applPath, ApplSpec& appl){
         if (!attr || strcmp(attr->name(), "NAME") != 0) return false;
         appl.name = attr->value();
         //Instances
-        if (!(node = node->next_sibling()) || strcmp(node->name(), "INSTANCES") != 0) return false;
+        if (!(node = node->first_node()) || strcmp(node->name(), "INSTANCES") != 0) return false;
         if (!extractInstances(node->first_node(), appl.instances)) return false;
         //Connections
         if (!(node = node->next_sibling()) || strcmp(node->name(), "CONNECTIONS") != 0) return false;
         if (!extractConnections(node->first_node(), appl.connections)) return false;
         //Constants
         if (!(node = node->next_sibling()) || strcmp(node->name(), "CONSTANTS") != 0) return false;
-        if (!extractConnections(node->first_node(), appl.connections)) return false;
+        if (!extractContants(node->first_node(), appl.constants)) return false;
         return true;
     }  catch (...) {
         return false;

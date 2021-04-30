@@ -7,7 +7,7 @@
 #include <QWidget>
 #include <QGraphicsView>
 
-#include "blockcompiler.h"
+#include "blockspec.h"
 
 class QGraphicsScene;
 
@@ -18,11 +18,7 @@ public:
     explicit ConnectionDesigner(QWidget* parent = nullptr);
     ~ConnectionDesigner();
 
-    void setTarget(QString filePath, CompSpec* comp);
-
 public slots:
-    void reload();
-
     bool addBlock(QString filePath, QString name, QPoint pos);
 
 signals:
@@ -40,7 +36,8 @@ private:
     QGraphicsScene* m_gScene;
     //This block
     QString m_filePath;
-    CompSpec* m_thisBlock = nullptr;
+
+    InstanceList m_il;
 };
 
 #endif // CONNECTIONDESIGNER_H

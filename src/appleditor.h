@@ -10,7 +10,7 @@ namespace Ui {
 class ApplEditor;
 }
 
-class ApplEditor : public BlockEditor{
+class ApplEditor: public BlockEditor{
     Q_OBJECT
 
 public:

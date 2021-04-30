@@ -63,6 +63,15 @@ struct ConnectionSpec{
 using ConnectionList = std::vector<ConnectionSpec>;
 
 struct ConstantSpec{
+    ConstantSpec(){}
+    ConstantSpec(
+        std::string value,
+        std::string to,
+        std::string to_port):
+        value(value),
+        to(to),
+        to_port(to_port)
+    {}
     std::string value;
     std::string to;
     std::string to_port;

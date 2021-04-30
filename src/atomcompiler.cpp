@@ -20,12 +20,12 @@ bool AtomCompiler::buildAtom(const std::string& headerPath, const AtomSpec& atom
     o << "class " << atom.name << "{\n";
     o << "public:\n";
     //Constructor
-    o << '\t' << atom.name << "(bool* ic):\n\t";
+    o << '\t' << atom.name << "(bool* ____changed):\n\t";
     for (int i = 0; i < (int)atom.inputs.size() - 1; ++i){
-        o << atom.inputs[i].name << "(ic), ";
+        o << atom.inputs[i].name << "(____changed), ";
     }
     if (atom.inputs.size() >= 1){//Last without the comma...
-        o << atom.inputs.back().name << "(ic)";
+        o << atom.inputs.back().name << "(____changed)";
     }
     o << "{}\n\t";
     //Func

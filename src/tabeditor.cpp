@@ -12,6 +12,7 @@
 #include "blockeditor.h"
 #include "atomeditor.h"
 #include "compeditor.h"
+#include "appleditor.h"
 
 TabEditor::TabEditor(QWidget *parent):
     QWidget(parent),
@@ -58,6 +59,8 @@ bool TabEditor::editFile(QString path){
         page = new AtomEditor{};
     } else if (fi.suffix() == "comp") {
         page = new CompEditor{};
+    } else if (fi.suffix() == "appl") {
+        page = new ApplEditor{};
     } else {
         return false;
     }
