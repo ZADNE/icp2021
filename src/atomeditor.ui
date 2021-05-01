@@ -180,6 +180,9 @@
      </item>
      <item row="1" column="0">
       <widget class="QFrame" name="nameFrame">
+       <property name="toolTip">
+        <string>Name of this block</string>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Box</enum>
        </property>

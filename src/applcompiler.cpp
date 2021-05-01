@@ -4,7 +4,7 @@
 #include "applcompiler.h"
 
 #include "blockbuildutils.h"
-#include "specstash.h"
+#include "speccache.h"
 
 ApplCompiler::ApplCompiler(const std::string& libPath):
     m_libPath(libPath){
@@ -14,7 +14,6 @@ ApplCompiler::ApplCompiler(const std::string& libPath):
 bool ApplCompiler::buildAppl(const std::string& filePath, const ApplSpec& appl){
     std::ofstream o{filePath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
-    SpecStash ss{m_libPath};
     //Includes
     o << "#include \"library.hpp\"\n\n";
     BlockBuildUtils::writeInstanceIncludes(o, appl.instances);
@@ -26,19 +25,21 @@ bool ApplCompiler::buildAppl(const std::string& filePath, const ApplSpec& appl){
     o << "\t\tstd::string ____name;\n";
     //Instances
     for (auto& inst: appl.instances){
-        auto& instOf = ss[inst.path];
+        const AnySpec& instOf = SpecCache::fetchAny(inst.path);
         if (std::holds_alternative<AtomSpec>(instOf)){
             //Instance of atomic block
             auto& atom = std::get<AtomSpec>(instOf);
             o << "\t\t" << atom.name << ' ' << inst.name << "{&____changed};\n";
-        } else {
+        } else if (std::holds_alternative<CompSpec>(instOf)) {
             //Instance of composite block
             auto& comp = std::get<CompSpec>(instOf);
             o << "\t\t" << comp.name << ' ' << inst.name << "{\"" << inst.name << ".\"};\n";
+        } else {
+            throw;
         }
     }
     //Name output ports of atomic blocks directly inside this application
-    BlockBuildUtils::writePortNameSettersForAtomBlocks(o, ss, appl.instances);
+    BlockBuildUtils::writePortNameSettersForAtomBlocks(o, appl.instances);
     //Connect ports
     BlockBuildUtils::writeConnections(o, appl.connections);
     //Set constant values

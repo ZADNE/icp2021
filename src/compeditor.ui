@@ -116,6 +116,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>Name of this block</string>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Box</enum>
        </property>
@@ -368,15 +371,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>VariableEditor</class>
-   <extends>QWidget</extends>
-   <header>variableeditor.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ConnectionDesigner</class>
    <extends>QWidget</extends>
    <header>connectiondesigner.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VariableEditor</class>
+   <extends>QWidget</extends>
+   <header>variableeditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

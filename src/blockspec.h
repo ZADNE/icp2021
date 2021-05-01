@@ -87,13 +87,13 @@ struct CompSpec{
     ConstantList constants;
 };
 
-using BlockSpec = std::variant<AtomSpec, CompSpec>;
-
 struct ApplSpec{
     std::string name;
     InstanceList instances;
     ConnectionList connections;
     ConstantList constants;
 };
+
+using AnySpec = std::variant<std::monostate, AtomSpec, CompSpec, ApplSpec>;
 
 #endif // BLOCKSPEC_H

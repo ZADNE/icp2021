@@ -37,6 +37,6 @@ private:
     int deleteQuestion(QString title, QString text, QString path);
     void updateNoTabLabel();
 
-    QFileInfo m_lib;
+    QString m_libPath;
 };
 #endif // MAINMENU_H

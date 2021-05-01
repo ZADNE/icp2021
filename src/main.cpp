@@ -1,11 +1,10 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "mainmenu.h"
 
 #include <QApplication>
 #include <QTranslator>
-#include <QDebug>
 
 int main(int argc, char *argv[]){
     QApplication a(argc, argv);
@@ -13,8 +12,6 @@ int main(int argc, char *argv[]){
 
     if (translator.load(a.applicationDirPath() + "/icp2021_en_US")){
         a.installTranslator(&translator);
-    } else {
-        qDebug() << "Failed to load file with translations.";
     }
 
     MainMenu w;

@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-#include "xmlutils.h"
+#include "speccache.h"
 
 BlockCompiler::BlockCompiler(){
 
@@ -16,8 +16,9 @@ BlockCompiler& BlockCompiler::get(){
     return bc;
 }
 
-bool BlockCompiler::openLibrary(const char* path){
+bool BlockCompiler::openLibrary(const std::string& path){
     m_libPath = path;
+    SpecCache::cache().setLibPath(m_libPath);
     return initLibrary();
 }
 
@@ -27,22 +28,14 @@ void BlockCompiler::setCppCompiler(const std::string& compiler){
 
 bool BlockCompiler::buildAtom(const std::string& atomPath){
     AtomSpec atom;
-    if (!readAtom(atomPath, atom)) return false;
+    if (!SpecCache::fetch(atomPath, atom)) return false;
     std::string headerPath = atomPath + ".hpp";
     return atomC.buildAtom(headerPath, atom);
 }
 
-bool BlockCompiler::readAtom(const std::string& atomPath, AtomSpec& atom){
-    return XMLUtils::readAtom(atomPath, atom);
-}
-
-bool BlockCompiler::writeAtom(const std::string& atomPath, const AtomSpec& atom){
-    return XMLUtils::writeAtom(atomPath, atom);
-}
-
 bool BlockCompiler::buildComp(const std::string& compPath){
     CompSpec comp;
-    if (!readComp(compPath, comp)) return false;
+    if (!SpecCache::fetch(compPath, comp)) return false;
     std::string headerPath = compPath + ".hpp";
     try {
         return compC.buildComp(headerPath, comp);
@@ -51,31 +44,15 @@ bool BlockCompiler::buildComp(const std::string& compPath){
     }
 }
 
-bool BlockCompiler::readComp(const std::string& compPath, CompSpec& comp){
-    return XMLUtils::readComp(compPath, comp);
-}
-
-bool BlockCompiler::writeComp(const std::string& compPath, const CompSpec& comp){
-    return XMLUtils::writeComp(compPath, comp);
-}
-
 bool BlockCompiler::buildAppl(const std::string& applPath){
     ApplSpec appl;
-    if (!readAppl(applPath, appl)) return false;
+    if (!SpecCache::fetch(applPath, appl)) return false;
     std::string filePath = applPath + ".cpp";
     try {
         return applC.buildAppl(filePath, appl);
     }  catch (...) {
         return false;
     }
-}
-
-bool BlockCompiler::readAppl(const std::string& applPath, ApplSpec& appl){
-    return XMLUtils::readAppl(applPath, appl);
-}
-
-bool BlockCompiler::writeAppl(const std::string& applPath, const ApplSpec& appl){
-    return XMLUtils::writeAppl(applPath, appl);
 }
 
 bool BlockCompiler::initLibrary(){

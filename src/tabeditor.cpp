@@ -36,14 +36,18 @@ QLabel& TabEditor::getNoTabLabel(){
     return *ui->no_block_label;
 }
 
+void TabEditor::setLibPath(QString libPath){
+    m_libPath = libPath;
+    BlockEditor::setLibPath(libPath);
+}
+
 bool TabEditor::createFolder(QString path){
-    QFileInfo fi{path};
+    QFileInfo fi{m_libPath + path};
     return QDir{fi.path()}.mkdir(fi.fileName());
 }
 
 bool TabEditor::editFile(QString path){
     QFileInfo fi{path};
-    path = fi.absoluteFilePath();
     //Check if it is not open already
     auto it = m_tabs.find(path);
     if (it != m_tabs.end()){
@@ -85,7 +89,7 @@ bool TabEditor::editFile(QString path){
 
 bool TabEditor::renameFile(QString oldFilePath, QString newFilePath){
     //Rename file
-    QFile file{oldFilePath};
+    QFile file{m_libPath + oldFilePath};
     if (!file.rename(newFilePath)){
         return false;
     }
@@ -107,7 +111,7 @@ bool TabEditor::renameFile(QString oldFilePath, QString newFilePath){
 
 bool TabEditor::deleteFile(QString path){
     //Delete file
-    if (!QFile::remove(path)){
+    if (!QFile::remove(m_libPath + path)){
         return false;
     }
     //Close tab
@@ -123,7 +127,7 @@ bool TabEditor::deleteFile(QString path){
 
 bool TabEditor::renameFolder(QString path, QString oldName, QString newName){
     //Rename folder
-    QDir dir{path};
+    QDir dir{m_libPath + path};
     if (!dir.rename(oldName, newName)){
         return false;
     }
@@ -159,7 +163,7 @@ bool TabEditor::renameFolder(QString path, QString oldName, QString newName){
 
 bool TabEditor::deleteFolder(QString path){
     //Delete folder
-    QDir dir{path};
+    QDir dir{m_libPath + path};
     if (!dir.removeRecursively()){
         return false;
     }

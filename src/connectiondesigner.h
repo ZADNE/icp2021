@@ -6,8 +6,7 @@
 
 #include <QWidget>
 #include <QGraphicsView>
-
-#include "blockspec.h"
+#include <QMimeData>
 
 class QGraphicsScene;
 
@@ -18,8 +17,10 @@ public:
     explicit ConnectionDesigner(QWidget* parent = nullptr);
     ~ConnectionDesigner();
 
+    void setMyPath(QString path);
+
 public slots:
-    bool addBlock(QString filePath, QString name, QPoint pos);
+    bool addBlock(QString relPath, QString name, QPoint pos);
 
 signals:
     void changed();
@@ -29,15 +30,17 @@ protected:
 
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
     virtual void dragMoveEvent(QDragMoveEvent* event) override;
-    virtual void dragLeaveEvent(QDragLeaveEvent* event) override;
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
-    QGraphicsScene* m_gScene;
-    //This block
-    QString m_filePath;
+    QString extractPathFromMime(const QMimeData& mime);
 
-    InstanceList m_il;
+    bool validPath(const QString& path);
+
+    QGraphicsScene* m_gScene;
+    int m_instanceN = 0;
+    //This block
+    QString m_myPath;
 };
 
 #endif // CONNECTIONDESIGNER_H

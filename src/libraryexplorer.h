@@ -9,6 +9,8 @@
 #include <QFileInfo>
 #include <QMenu>
 
+const int REL_PATH_ROLE = Qt::UserRole;
+
 namespace Ui {
 class LibraryExplorer;
 }
@@ -33,12 +35,12 @@ public slots:
 private:
     Ui::LibraryExplorer* ui;
 
-    void addDir(QTreeWidgetItem* parent, QString path);
-    QTreeWidgetItem* addItem(QTreeWidgetItem* parent, QFileInfo fi);
+    void addDir(QTreeWidgetItem* parent, QString path, QString relPath);
+    QTreeWidgetItem* addItem(QTreeWidgetItem* parent, QFileInfo fi, QString relPath);
 
     //Item to path
-    QString currentPath();
-    QString path(QTreeWidgetItem* item, int column);
+    QString currentRelPath();
+    QString relPath(QTreeWidgetItem* item, int column);
 
     QString m_libPath;
     QMenu m_menuFolder;

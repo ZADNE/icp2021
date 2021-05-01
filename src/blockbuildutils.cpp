@@ -6,6 +6,8 @@
 #include <set>
 #include <algorithm>
 
+#include "speccache.h"
+
 void BlockBuildUtils::writeTemplates(std::ofstream& o, const SlotList& inputs, const SlotList& outputs){
     std::set<std::string> templates;
     for (auto& slot: inputs){
@@ -51,9 +53,9 @@ void BlockBuildUtils::writePortNameSetters(std::ofstream& o, const std::string& 
     }
 }
 
-void BlockBuildUtils::writePortNameSettersForAtomBlocks(std::ofstream& o, SpecStash& ss, const InstanceList& il){
+void BlockBuildUtils::writePortNameSettersForAtomBlocks(std::ofstream& o, const InstanceList& il){
     for (auto& inst: il){
-        auto& instOf = ss[inst.path];
+        auto& instOf = SpecCache::fetchAny(inst.path);
         if (std::holds_alternative<AtomSpec>(instOf)){
             //Instance of atomic block
             auto& atom = std::get<AtomSpec>(instOf);

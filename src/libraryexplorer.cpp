@@ -45,11 +45,11 @@ void LibraryExplorer::loadLibrary(QString libraryPath){
     ui->view->clear();
 
     QFileInfo lib{libraryPath};
-    m_libPath = lib.absoluteFilePath();
+    m_libPath = lib.canonicalFilePath();
 
-    auto* root = addItem(nullptr, lib);
+    auto* root = addItem(nullptr, lib.canonicalFilePath(), ".");
     ui->view->addTopLevelItem(root);
-    addDir(root, libraryPath);
+    addDir(root, m_libPath, ".");
 
     ui->view->expandAll();
 }
@@ -61,46 +61,49 @@ void LibraryExplorer::reloadLibrary(){
 void LibraryExplorer::contextMenu(const QPoint &point){
     QModelIndex index = ui->view->indexAt(point);
     if (index.isValid()){ //If clicked on an item
-        QFileInfo fi  = QFileInfo{index.data(Qt::UserRole).toString()};
+        QString filePath =
+                m_libPath + index.data(REL_PATH_ROLE).toString();
+        QFileInfo fi  = QFileInfo{filePath};
         if (fi.isDir()){
             m_menuFolder.popup(mapToGlobal(point));
-        } else {
+        } else if (fi.isFile()) {
             m_menuFile.popup(mapToGlobal(point));
         }
     }
 }
 
 void LibraryExplorer::actionEdit_file(){
-    emit editFile(currentPath());
+    emit editFile(currentRelPath());
 }
 
 void LibraryExplorer::actionAdd_new(){
-    emit addNew(currentPath());
+    emit addNew(currentRelPath());
 }
 
 void LibraryExplorer::actionRename(){
-    emit renameThis(currentPath());
+    emit renameThis(currentRelPath());
 }
 
 void LibraryExplorer::actionDelete(){
-    emit deleteThis(currentPath());
+    emit deleteThis(currentRelPath());
 }
 
-void LibraryExplorer::addDir(QTreeWidgetItem* parent, QString path){
+void LibraryExplorer::addDir(QTreeWidgetItem* parent, QString path, QString relPath){
     QFileInfoList list = QDir{path}.entryInfoList(
                             {"*.atom", "*.comp", "*.appl"},
                             QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot,
                             QDir::DirsFirst | QDir::Type);
     for (auto& file: list){
-        auto* newItem = addItem(parent, file);
+        QString nextRelPath = relPath + "/" + file.fileName();
+        auto* newItem = addItem(parent, file, nextRelPath);
         if (file.isDir()){
             //Go to subdirectory
-            addDir(newItem, file.filePath());
+            addDir(newItem, path + "/" + file.fileName(), nextRelPath);
         }
     }
 }
 
-QTreeWidgetItem* LibraryExplorer::addItem(QTreeWidgetItem* parent, QFileInfo fi){
+QTreeWidgetItem* LibraryExplorer::addItem(QTreeWidgetItem* parent, QFileInfo fi, QString relPath){
     QTreeWidgetItem* newItem;
     if (fi.isFile()){
         newItem = new QTreeWidgetItem{parent, QStringList() << fi.completeBaseName()};
@@ -111,21 +114,22 @@ QTreeWidgetItem* LibraryExplorer::addItem(QTreeWidgetItem* parent, QFileInfo fi)
         //Default folder icon
         newItem->setIcon(0, style()->standardIcon(QStyle::SP_DirIcon));
     }
-    newItem->setData(0, Qt::UserRole, {fi.canonicalFilePath()});
+    newItem->setData(0, REL_PATH_ROLE, {relPath});
     return newItem;
 }
 
-QString LibraryExplorer::currentPath(){
-    return path(ui->view->currentItem(), ui->view->currentColumn());
+QString LibraryExplorer::currentRelPath(){
+    return relPath(ui->view->currentItem(), ui->view->currentColumn());
 }
 
-QString LibraryExplorer::path(QTreeWidgetItem *item, int column){
-    return item->data(column, Qt::UserRole).toString();
+QString LibraryExplorer::relPath(QTreeWidgetItem* item, int column){
+    return item->data(column, REL_PATH_ROLE).toString();
 }
 
-void LibraryExplorer::viewItemDoubleclicked(QTreeWidgetItem *item, int column){
-    QFileInfo fi = QFileInfo(path(item, column));
+void LibraryExplorer::viewItemDoubleclicked(QTreeWidgetItem* item, int column){
+    auto rel = relPath(item, column);
+    QFileInfo fi = QFileInfo(m_libPath + rel);
     if (fi.isFile()){
-        emit editFile(fi.canonicalFilePath());
+        emit editFile(rel);
     }
 }

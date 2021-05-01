@@ -7,6 +7,7 @@
 #include <QDebug>
 
 #include "blockcompiler.h"
+#include "speccache.h"
 
 ApplEditor::ApplEditor(QWidget *parent):
     BlockEditor(parent),
@@ -25,6 +26,7 @@ ApplEditor::~ApplEditor(){
 }
 
 void ApplEditor::load(){
+    ui->designer->setMyPath(filePath());
     qDebug() << "Appl load " << filePath();
 }
 
@@ -35,7 +37,7 @@ void ApplEditor::save(){
     spec.instances.emplace_back("com", "cmp.comp", 0, 0);
     spec.constants.emplace_back("5", "com", "in0");
     //Write specs
-    BlockCompiler::get().writeAppl(filePath().toStdString(), spec);
+    SpecCache::save(filePath().toStdString(), spec);
 }
 
 void ApplEditor::build(){

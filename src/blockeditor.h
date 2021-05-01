@@ -13,8 +13,9 @@ public:
     explicit BlockEditor(QWidget *parent = nullptr);
     virtual ~BlockEditor();
 
+    static void setLibPath(QString libPath);
 
-    void setFilePath(QString filePath, bool loadFile);
+    void setFilePath(QString relPath, bool loadFile);
     QString filePath() const;
 
     bool hasUnsavedChanges() { return m_unsavedChanges; }
@@ -34,9 +35,11 @@ protected:
     virtual void build() = 0;
 
 private:
-    QFileInfo m_fileInfo;
+    QString m_relPath;
 
     bool m_unsavedChanges = false;
+
+    static QString m_libPath;
 };
 
 #endif // BLOCKEDITOR_H

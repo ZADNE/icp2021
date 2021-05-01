@@ -7,6 +7,7 @@
 #include <QDebug>
 
 #include "blockcompiler.h"
+#include "speccache.h"
 
 CompEditor::CompEditor(QWidget *parent):
     BlockEditor(parent),
@@ -29,6 +30,7 @@ CompEditor::~CompEditor(){
 }
 
 void CompEditor::load(){
+    ui->designer->setMyPath(filePath());
     qDebug() << "Comp load " << filePath();
 }
 
@@ -42,7 +44,7 @@ void CompEditor::save(){
     spec.connections.emplace_back("", "in0", "acc", "in");
     spec.connections.emplace_back("acc", "out", "", "out0");
     //Write specs
-    BlockCompiler::get().writeComp(filePath().toStdString(), spec);
+    SpecCache::save(filePath().toStdString(), spec);
 }
 
 void CompEditor::build(){

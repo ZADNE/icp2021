@@ -54,11 +54,12 @@ MainMenu::~MainMenu(){
 void MainMenu::openLibrary(QString libpath){
     QFileInfo fi = QFileInfo{libpath};
     if (fi.isDir()){
-        m_lib = fi;
+        m_libPath = fi.canonicalFilePath() + "/";
         ui->tabEditor->closeAllTabs();
         updateNoTabLabel();
-        ui->libraryExplorer->loadLibrary(m_lib.canonicalFilePath());
-        BlockCompiler::get().openLibrary(libpath.toUtf8().constData());
+        ui->libraryExplorer->loadLibrary(m_libPath);
+        BlockCompiler::get().openLibrary(m_libPath.toStdString());
+        ui->tabEditor->setLibPath(m_libPath);
     }
 }
 
@@ -93,20 +94,29 @@ void MainMenu::addNew(QString path){
 }
 
 void MainMenu::renameThis(QString path){
-    QFileInfo fi{path};
-    if (fi.isDir()){
-        //Renaming directory
-        bool renamingLib = fi == m_lib;
-        QString newName = renameDialog(renamingLib ? tr("library"): tr("folder"), fi.fileName());
+    if (path == "."){//Renaming library
+        QFileInfo fi{m_libPath.leftRef(m_libPath.size() - 1).toString()};
+        QString oldName = fi.fileName();
+        QString newName = renameDialog(tr("library"), oldName);
         if (!newName.isEmpty()){
-            if (ui->tabEditor->renameFolder(fi.path(), fi.fileName(),
-                    newName)){
+            ui->tabEditor->closeAllTabs();
+            QDir dir{fi.path()};
+            if (dir.rename(oldName, newName)){
+                openLibrary(dir.path() + "/" + newName);
+            }
+        }
+        return;
+    }
+    //Renaming files or categories
+    QFileInfo fi{m_libPath + path};
+    if (fi.isDir()){
+        //Renaming category
+        QString newName = renameDialog(tr("folder"), fi.fileName());
+        if (!newName.isEmpty()){
+            QFileInfo helper{path};
+            if (ui->tabEditor->renameFolder(helper.path(), fi.fileName(), newName)){
                 //Successfully renamed
-                if (renamingLib){
-                    openLibrary(fi.path() + "/" + newName);
-                } else {
-                    ui->libraryExplorer->reloadLibrary();
-                }
+                ui->libraryExplorer->reloadLibrary();
             }
         }
     } else {
@@ -123,7 +133,7 @@ void MainMenu::renameThis(QString path){
 }
 
 void MainMenu::deleteThis(QString path){
-    QFileInfo fi{path};
+    QFileInfo fi{m_libPath + path};
     if (fi.isDir()){
         //Removing directory
         int clicked = deleteQuestion(
@@ -168,7 +178,8 @@ int MainMenu::deleteQuestion(QString title, QString text, QString path){
 
 void MainMenu::updateNoTabLabel(){
     QString text = tr("<font  size=\"6\">No block is open for editing.</font><br>");
-    if (m_lib.exists()){
+    QFileInfo fi{m_libPath};
+    if (fi.exists()){
         text += tr("<font  size=\"4\">&gt; Open a block from library on the left.</font><br>");
     } else {
         text += tr("<font  size=\"4\">&gt; Open a library from top menu bar.</font><br>");

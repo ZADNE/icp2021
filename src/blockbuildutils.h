@@ -6,7 +6,6 @@
 #include <fstream>
 
 #include "blockspec.h"
-#include "specstash.h"
 
 namespace BlockBuildUtils{
 
@@ -15,7 +14,7 @@ namespace BlockBuildUtils{
     void writeInstanceIncludes(std::ofstream& o, const InstanceList& il);
 
     void writePortNameSetters(std::ofstream& o, const std::string& instance, const SlotList& outputs);
-    void writePortNameSettersForAtomBlocks(std::ofstream& o, SpecStash& ss, const InstanceList& il);
+    void writePortNameSettersForAtomBlocks(std::ofstream& o, const InstanceList& il);
     void writeConnections(std::ofstream& o, const ConnectionList& cl);
     void writeConstValueSetters(std::ofstream& o, const ConstantList& cl);
 

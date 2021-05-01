@@ -1,9 +1,11 @@
 /***
- * \author Tomáš Dubský (xdubsk08)
+ * \author Tomas Dubsky (xdubsk08)
  * */
 #include "blockeditor.h"
 
 #include <QDebug>
+
+QString BlockEditor::m_libPath = QString{};
 
 BlockEditor::BlockEditor(QWidget *parent) : QWidget(parent){
 
@@ -13,11 +15,14 @@ BlockEditor::~BlockEditor(){
 
 }
 
-void BlockEditor::setFilePath(QString filePath, bool loadFile){
-    m_fileInfo = filePath;
-    m_fileInfo.makeAbsolute();
+void BlockEditor::setLibPath(QString libPath){
+    m_libPath = libPath;
+}
+
+void BlockEditor::setFilePath(QString relPath, bool loadFile){
+    m_relPath = relPath;
     if (loadFile){
-        QFile file{filePath};
+        QFile file{m_libPath + relPath};
         if (file.exists()){
             load();
         } else {
@@ -33,17 +38,14 @@ void BlockEditor::setFilePath(QString filePath, bool loadFile){
 }
 
 QString BlockEditor::filePath() const{
-    return m_fileInfo.absoluteFilePath();
+    return m_relPath;
 }
 
 void BlockEditor::saveWork(){
     if (m_unsavedChanges == true){
-        m_fileInfo.refresh();
-        if (m_fileInfo.exists()){
-            m_unsavedChanges = false;
-            save();
-            emit withoutUnsavedChanges(this);
-        }
+        m_unsavedChanges = false;
+        save();
+        emit withoutUnsavedChanges(this);
     }
 }
 

@@ -12,7 +12,15 @@ namespace rapidxml{
 using xml_doc = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
 
-namespace XMLUtils{
+class XMLUtils{
+public:
+    XMLUtils(XMLUtils const&) = delete;
+    void operator=(XMLUtils const&) = delete;
+protected:
+    //'Clever' function that parse the file based on its suffix
+    //Returns monostate if file cannot by found/parsed
+    AnySpec readAny(const std::string& filePath);
+    bool writeAny(const std::string& filePath, const AnySpec& any);
 
     //Full size functions for reading specs from XML file
     bool readAtom(const std::string& atomPath, AtomSpec& atom);
@@ -24,6 +32,9 @@ namespace XMLUtils{
     bool writeComp(const std::string& compPath, const CompSpec& comp);
     bool writeAppl(const std::string& applPath, const ApplSpec& appl);
 
+    XMLUtils();
+
+private:
     //Functions for extracting specs from XML node
     void extractPorts(xml_node* node, SlotList& sl);
     bool extractInstances(xml_node* node, InstanceList& il);
@@ -36,6 +47,6 @@ namespace XMLUtils{
     void insertConnections(xml_doc* doc, xml_node* node, const ConnectionList& cl);
     void insertConstants(xml_doc* doc, xml_node* node, const ConstantList& cl);
 
-}
+};
 
 #endif // XMLUTILS_H

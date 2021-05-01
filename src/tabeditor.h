@@ -23,6 +23,8 @@ public:
 
     QLabel& getNoTabLabel();
 
+    void setLibPath(QString libPath);
+
 signals:
     void saveWork();
 
@@ -46,6 +48,8 @@ private:
     void addNoTab();
 
     std::unordered_map<QString, BlockEditor*> m_tabs;
+
+    QString m_libPath;
 };
 
 #endif // TABEDITOR_H

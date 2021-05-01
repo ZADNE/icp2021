@@ -4,10 +4,47 @@
 #include "xmlutils.h"
 
 #include <fstream>
+#include <filesystem>
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_utils.hpp"
 #include "rapidxml/rapidxml_print.hpp"
+
+
+AnySpec XMLUtils::readAny(const std::string& filePath){
+    AnySpec spec;//Monostate
+    auto ext = std::filesystem::path(filePath).extension().string();
+    if (ext == ".atom"){
+        AtomSpec atom;
+        if (XMLUtils::readAtom(filePath, atom)){
+            spec = atom;
+        }
+    } else if (ext == ".comp"){
+        CompSpec comp;
+        if (XMLUtils::readComp(filePath, comp)){
+            spec = comp;
+        }
+    } else if (ext == ".appl"){
+        ApplSpec appl;
+        if (XMLUtils::readAppl(filePath, appl)){
+            spec = appl;
+        }
+    }
+    return spec;
+}
+
+bool XMLUtils::writeAny(const std::string& filePath, const AnySpec& any){
+    if (std::holds_alternative<AtomSpec>(any)){
+        return writeAtom(filePath, std::get<AtomSpec>(any));
+    } else if (std::holds_alternative<CompSpec>(any)){
+        return writeComp(filePath, std::get<CompSpec>(any));
+    } else if (std::holds_alternative<ApplSpec>(any)){
+        return writeAppl(filePath, std::get<ApplSpec>(any));
+    } else {
+        return false;
+    }
+}
+
 
 bool XMLUtils::readAtom(const std::string& atomPath, AtomSpec& atom){
     try {
@@ -193,6 +230,10 @@ bool XMLUtils::writeAppl(const std::string& applPath, const ApplSpec& appl){
     os << doc;
     os.close();
     return true;
+}
+
+XMLUtils::XMLUtils(){
+
 }
 
 void XMLUtils::extractPorts(xml_node* node, SlotList& sl){

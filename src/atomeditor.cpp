@@ -9,6 +9,7 @@
 #include <QTreeWidgetItemIterator>
 
 #include "blockcompiler.h"
+#include "speccache.h"
 
 //Helper functions
 void loadPorts(VariableEditor* ve, const SlotList& sl);
@@ -39,7 +40,7 @@ AtomEditor::~AtomEditor(){
 void AtomEditor::load(){
     //Read specs
     auto spec = AtomSpec{};
-    BlockCompiler::get().readAtom(filePath().toStdString(), spec);
+    SpecCache::fetch(filePath().toStdString(), spec);
     //Insert specs to widgets
     ui->nameEditor->setText(spec.name.c_str());
     loadPorts(ui->inputEditor, spec.inputs);
@@ -57,7 +58,7 @@ void AtomEditor::save(){
     spec.body = ui->codeEditor->toPlainText().toStdString();
     spec.stateVars = ui->stateVarEditor->toPlainText().toStdString();
     //Write specs
-    BlockCompiler::get().writeAtom(filePath().toStdString(), spec);
+    SpecCache::save(filePath().toStdString(), spec);
 }
 
 void AtomEditor::build(){

@@ -16,6 +16,7 @@ SOURCES += \
     src/blockbuildutils.cpp \
     src/blockcompiler.cpp \
     src/blockeditor.cpp \
+    src/blockinstance.cpp \
     src/compcompiler.cpp \
     src/compeditor.cpp \
     src/connectiondesigner.cpp \
@@ -23,7 +24,7 @@ SOURCES += \
     src/main.cpp \
     src/mainmenu.cpp \
     src/newfiledialog.cpp \
-    src/specstash.cpp \
+    src/speccache.cpp \
     src/tabeditor.cpp \
     src/variableeditor.cpp \
     src/xmlutils.cpp
@@ -36,6 +37,7 @@ HEADERS += \
     src/blockbuildutils.h \
     src/blockcompiler.h \
     src/blockeditor.h \
+    src/blockinstance.h \
     src/blockspec.h \
     src/compcompiler.h \
     src/compeditor.h \
@@ -43,7 +45,7 @@ HEADERS += \
     src/libraryexplorer.h \
     src/mainmenu.h \
     src/newfiledialog.h \
-    src/specstash.h \
+    src/speccache.h \
     src/tabeditor.h \
     src/rapidxml/rapidxml.hpp \
     src/rapidxml/rapidxml_iterators.hpp \
@@ -55,6 +57,7 @@ HEADERS += \
 FORMS += \
     src/appleditor.ui \
     src/atomeditor.ui \
+    src/blockinstance.ui \
     src/compeditor.ui \
     src/libraryexplorer.ui \
     src/mainmenu.ui \
