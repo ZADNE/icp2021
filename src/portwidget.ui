@@ -62,7 +62,7 @@
   </action>
   <action name="actionDisconnect">
    <property name="text">
-    <string>Disconnect</string>
+    <string>Disconnect all</string>
    </property>
   </action>
  </widget>

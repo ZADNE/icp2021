@@ -42,7 +42,6 @@ PortWidget::PortWidget(PortType portType, QString dataType,
 }
 
 PortWidget::~PortWidget(){
-    emit disconnectPort(this);
     delete ui;
 }
 

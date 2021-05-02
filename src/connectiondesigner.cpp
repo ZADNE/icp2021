@@ -3,6 +3,8 @@
  * */
 #include "connectiondesigner.h"
 
+#include <unordered_map>
+
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
@@ -28,7 +30,7 @@ ConnectionDesigner::ConnectionDesigner(QWidget* parent) :
 }
 
 ConnectionDesigner::~ConnectionDesigner(){
-    delete m_gScene;
+
 }
 
 void ConnectionDesigner::setMyPath(QString path){
@@ -64,21 +66,48 @@ BlockInstance* ConnectionDesigner::addBlock(QString relPath, QString name, QPoin
 }
 
 void ConnectionDesigner::insertSpecs(InstanceList& instl, ConnectionList& connl, ConstantList& cnstl){
+    std::unordered_map<std::string, PortWidget*> ports;
     //Instances
     for (auto& inst: instl){
         QString path = QString::fromStdString(inst.path);
         QString name = QString::fromStdString(inst.name);
-        auto* widget = addBlock(path, name, QPoint(inst.x, inst.y));
-        if (widget){
-            //Constants of this instance
-            for (auto& cnst: cnstl){
-                if (cnst.to == inst.name){
-                    widget->setConstPort(
-                        QString::fromStdString(cnst.to_port),
-                        QString::fromStdString(cnst.value));
+        auto* block = addBlock(path, name, QPoint(inst.x, inst.y));
+        if (!block) continue;
+        //Constants of this instance
+        for (auto& cnst: cnstl){
+            if (cnst.to == inst.name){
+                block->setConstPort(
+                    QString::fromStdString(cnst.to_port),
+                    QString::fromStdString(cnst.value));
+            }
+        }
+        //Connections from/to this instance
+        for (auto& conn: connl){
+            if (conn.from == inst.name){
+                std::string portName = conn.from_port;
+                auto* port = block->getPort(QString::fromStdString(portName));
+                if (port){
+                    ports.insert(std::make_pair(inst.name + "." + portName, port));
+                }
+            }
+            if (conn.to == inst.name){
+                std::string portName = conn.to_port;
+                auto* port = block->getPort(QString::fromStdString(portName));
+                if (port){
+                    ports.insert(std::make_pair(inst.name + "." + portName, port));
                 }
             }
         }
+    }
+    //Connections
+    for (auto& conn: connl){
+        auto it = ports.find(conn.from + "." + conn.from_port);
+        if (it == ports.end()) continue;
+        auto* from = it->second;
+        it = ports.find(conn.to + "." + conn.to_port);
+        if (it == ports.end()) continue;
+        auto* to = it->second;
+        connectPorts(from, to);
     }
 }
 
@@ -97,16 +126,7 @@ void ConnectionDesigner::connectPort(PortWidget* w, QPointF pos){
         if (w->getType() != PortType::Input) return;
         //Finishing connection
         m_line->setPos(-10000, -10000);
-        auto* connLine = m_gScene->addLine(
-                0, 0, pos.x() - m_connStart.x(), pos.y() - m_connStart.y());
-        connLine->setPos(m_connStart);
-        connLine->setPen(m_connPen);
-        m_connections.emplace(m_connFrom, w, connLine);
-        //Connect disconnecting signals
-        connect(m_connFrom, &PortWidget::disconnectPort,
-                this, &ConnectionDesigner::disconnectPort);
-        connect(w, &PortWidget::disconnectPort,
-                this, &ConnectionDesigner::disconnectPort);
+        connectPorts(m_connFrom, w);
         emit changed();
     }
 
@@ -204,6 +224,21 @@ bool ConnectionDesigner::validPath(const QString& path){
     return false;
 }
 
+void ConnectionDesigner::connectPorts(PortWidget* from, PortWidget* to){
+    auto fromPos = from->getPosition();
+    auto toPos = to->getPosition();
+    auto* connLine = m_gScene->addLine(
+            0, 0, toPos.x() - fromPos.x(), toPos.y() - fromPos.y());
+    connLine->setPos(fromPos);
+    connLine->setPen(m_connPen);
+    m_connections.emplace(from, to, connLine);
+    //Connect disconnecting signals
+    connect(from, &PortWidget::disconnectPort,
+            this, &ConnectionDesigner::disconnectPort);
+    connect(to, &PortWidget::disconnectPort,
+            this, &ConnectionDesigner::disconnectPort);
+}
+
 void ConnectionDesigner::redrawConnections(){
     for (auto it = m_connections.begin(); it != m_connections.end(); ++it) {
         auto fromPos = it->from->getPosition();
@@ -224,4 +259,5 @@ void ConnectionDesigner::disconnectPort(PortWidget* port){
             ++it;
         }
     }
+    emit changed();
 }

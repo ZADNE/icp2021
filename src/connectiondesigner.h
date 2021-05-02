@@ -82,6 +82,7 @@ private:
     QPointF m_connStart;
     PortWidget* m_connFrom;
     QPen m_connPen{Qt::black, 2, Qt::SolidLine};
+    void connectPorts(PortWidget* from, PortWidget* to);
     void redrawConnections();
 private slots:
     void disconnectPort(PortWidget* port);

@@ -39,6 +39,7 @@ public slots:
     void editClass();
     void appendMySpecs(InstanceList& instl, ConstantList& cnstl);
     void setConstPort(QString portName, QString value);
+    PortWidget* getPort(QString portName);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;

@@ -74,12 +74,19 @@ void BlockInstance::appendMySpecs(InstanceList& instl, ConstantList& cnstl){
 }
 
 void BlockInstance::setConstPort(QString portName, QString value){
-    for (auto& portWidget: m_portWidgets) {
-        if (portWidget->getPortName() == portName){
-            portWidget->setConst(value);
-            return;
+    auto* port = getPort(portName);
+    if (port){
+        port->setConst(value);
+    }
+}
+
+PortWidget* BlockInstance::getPort(QString portName){
+    for (int i = 0; i < m_portWidgets.size(); ++i) {
+        if (m_portWidgets[i]->getPortName() == portName){
+            return m_portWidgets[i];
         }
     }
+    return nullptr;
 }
 
 void BlockInstance::resizeEvent(QResizeEvent* event){
@@ -88,6 +95,9 @@ void BlockInstance::resizeEvent(QResizeEvent* event){
 }
 
 void BlockInstance::closeEvent(QCloseEvent* event){
+    for (int i = 0; i < m_portWidgets.size(); ++i) {
+        emit m_portWidgets[i]->disconnectPort(m_portWidgets[i]);
+    }
     emit changed();
     m_scene->removeItem(m_parentRect);
     event->accept();
@@ -126,6 +136,7 @@ bool BlockInstance::reload(){
 void BlockInstance::rebuildPorts(const PortList& inputs, const PortList& outputs){
     //Clear previous buttons
     for (int i = 0; i < m_portWidgets.size(); ++i) {
+        emit m_portWidgets[i]->disconnectPort(m_portWidgets[i]);
         delete m_portWidgets[i];
     }
     m_portWidgets.clear();
