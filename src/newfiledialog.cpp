@@ -8,10 +8,11 @@
 #include <QFileInfo>
 #include <QDir>
 
-NewFileDialog::NewFileDialog(QWidget *parent, QString workdir) :
+NewFileDialog::NewFileDialog(QWidget *parent, QString libPath, QString relPath) :
     QDialog(parent),
     ui(new Ui::NewFileDialog),
-    m_workDir(workdir)
+    m_libPath(libPath),
+    m_relPath(relPath)
 {
     ui->setupUi(this);
     m_type = FileType::dir;
@@ -23,18 +24,19 @@ NewFileDialog::~NewFileDialog(){
 
 NewFileRequest NewFileDialog::getResult(){
     if (m_fileValid){
-        return NewFileRequest{m_type, constructFilePath()};
+        return NewFileRequest{m_type, constructRelPath()};
     } else {
         return NewFileRequest{FileType::none, ""};
     }
 }
 
-QString NewFileDialog::constructFilePath(){
-    return m_workDir + "/" + ui->name->text() + ui->suffix->text();
+QString NewFileDialog::constructRelPath(){
+    qDebug() << m_relPath + "/" + ui->name->text() + ui->suffix->text();
+    return m_relPath + "/" + ui->name->text() + ui->suffix->text();
 }
 
 void NewFileDialog::validate(){
-    QFileInfo fi{constructFilePath()};
+    QFileInfo fi{m_libPath + constructRelPath()};
 
     m_fileValid = !fi.exists() && !ui->name->text().isEmpty();
     ui->add->setEnabled(m_fileValid);

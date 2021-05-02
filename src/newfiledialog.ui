@@ -24,7 +24,7 @@
    <item>
     <widget class="QListWidget" name="typeList">
      <property name="currentRow">
-      <number>-1</number>
+      <number>0</number>
      </property>
      <item>
       <property name="text">

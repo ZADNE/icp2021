@@ -236,7 +236,7 @@ XMLUtils::XMLUtils(){
 
 }
 
-void XMLUtils::extractPorts(xml_node* node, SlotList& sl){
+void XMLUtils::extractPorts(xml_node* node, PortList& sl){
     while (node){
         bool templ = false;
         auto* attr = node->first_attribute();
@@ -317,7 +317,7 @@ bool XMLUtils::extractContants(xml_node* node, ConstantList& cl){
     return true;
 }
 
-void XMLUtils::insertPorts(xml_doc* doc, xml_node* node, const SlotList& sl){
+void XMLUtils::insertPorts(xml_doc* doc, xml_node* node, const PortList& sl){
     for(auto& slot: sl){
         auto* slotNode = doc->allocate_node(rapidxml::node_element, slot.name.c_str(), slot.type.c_str());
         slotNode->append_attribute(doc->allocate_attribute("TEMPLATE", slot.templ ? "TRUE": "FALSE"));

@@ -23,6 +23,7 @@ public:
 signals:
     void havingUnsavedChanges(BlockEditor* editor);
     void withoutUnsavedChanges(BlockEditor* editor);
+    void editBlock(QString path);//Request to edit other block
 
 public slots:
     virtual void saveWork() final;

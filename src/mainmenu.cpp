@@ -78,7 +78,7 @@ void MainMenu::exitProgram(){
 }
 
 void MainMenu::addNew(QString path){
-    NewFileDialog f{this, path};
+    NewFileDialog f{this, m_libPath, path};
     if (f.exec()){
         NewFileRequest r = f.getResult();
         bool success = false;

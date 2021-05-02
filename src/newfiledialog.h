@@ -32,7 +32,7 @@ class NewFileDialog : public QDialog{
     Q_OBJECT
 
 public:
-    explicit NewFileDialog(QWidget *parent = nullptr, QString workdir = "");
+    explicit NewFileDialog(QWidget *parent, QString libPath, QString relPath);
     ~NewFileDialog();
 
     NewFileRequest getResult();
@@ -40,9 +40,10 @@ public:
 private:
     Ui::NewFileDialog *ui;
 
-    QString constructFilePath();
+    QString constructRelPath();
 
-    QString m_workDir;
+    QString m_libPath;
+    QString m_relPath;
     bool m_fileValid = false;
     FileType m_type = FileType::none;
 

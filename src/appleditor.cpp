@@ -19,6 +19,9 @@ ApplEditor::ApplEditor(QWidget *parent):
             this, &ApplEditor::editedWork);
     connect(ui->nameEditor, &QLineEdit::textChanged,
             this, &ApplEditor::editedWork);
+
+    connect(ui->designer, &ConnectionDesigner::editBlock,
+            this, &BlockEditor::editBlock);
 }
 
 ApplEditor::~ApplEditor(){
@@ -27,15 +30,19 @@ ApplEditor::~ApplEditor(){
 
 void ApplEditor::load(){
     ui->designer->setMyPath(filePath());
-    qDebug() << "Appl load " << filePath();
+    //Read specs
+    auto spec = ApplSpec{};
+    SpecCache::fetch(filePath().toStdString(), spec);
+    //Insert specs to widgets
+    ui->nameEditor->setText(spec.name.c_str());
+    ui->designer->insertSpecs(spec.instances, spec.connections, spec.constants);
 }
 
 void ApplEditor::save(){
     //Compose specs
     auto spec = ApplSpec{};
-    spec.name = "Aplikace";
-    spec.instances.emplace_back("com", "cmp.comp", 0, 0);
-    spec.constants.emplace_back("5", "com", "in0");
+    spec.name = ui->nameEditor->text().toStdString();
+    ui->designer->collectSpecs(spec.instances, spec.connections, spec.constants);
     //Write specs
     SpecCache::save(filePath().toStdString(), spec);
 }

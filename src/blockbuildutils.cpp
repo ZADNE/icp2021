@@ -8,7 +8,7 @@
 
 #include "speccache.h"
 
-void BlockBuildUtils::writeTemplates(std::ofstream& o, const SlotList& inputs, const SlotList& outputs){
+void BlockBuildUtils::writeTemplates(std::ofstream& o, const PortList& inputs, const PortList& outputs){
     std::set<std::string> templates;
     for (auto& slot: inputs){
         if (slot.templ) templates.insert(slot.type);
@@ -46,7 +46,7 @@ void BlockBuildUtils::writeInstanceIncludes(std::ofstream& o, const InstanceList
     }
     o << '\n';
 }
-void BlockBuildUtils::writePortNameSetters(std::ofstream& o, const std::string& instance, const SlotList& outputs){
+void BlockBuildUtils::writePortNameSetters(std::ofstream& o, const std::string& instance, const PortList& outputs){
     for (auto& out: outputs){
         std::string name = BlockBuildUtils::qualifiedPortname(instance, out.name);
         o << "\t\tsetName(&" << name << ", ____name + \"" << name << "\");\n";

@@ -15,14 +15,19 @@ CompEditor::CompEditor(QWidget *parent):
 {
     ui->setupUi(this);
 
-    connect(ui->inputEditor, &VariableEditor::edited,
+    connect(ui->inputEditor, &PortEditor::edited,
             this, &CompEditor::editedWork);
-    connect(ui->outputEditor, &VariableEditor::edited,
+    connect(ui->outputEditor, &PortEditor::edited,
             this, &CompEditor::editedWork);
     connect(ui->designer, &ConnectionDesigner::changed,
             this, &CompEditor::editedWork);
     connect(ui->nameEditor, &QLineEdit::textChanged,
             this, &CompEditor::editedWork);
+
+    connect(ui->designer, &ConnectionDesigner::editBlock,
+            this, &BlockEditor::editBlock);
+    connect(ui->designer, &ConnectionDesigner::changed,
+            this, &BlockEditor::editedWork);
 }
 
 CompEditor::~CompEditor(){
@@ -31,18 +36,23 @@ CompEditor::~CompEditor(){
 
 void CompEditor::load(){
     ui->designer->setMyPath(filePath());
-    qDebug() << "Comp load " << filePath();
+    //Read specs
+    auto spec = CompSpec{};
+    SpecCache::fetch(filePath().toStdString(), spec);
+    //Insert specs to widgets
+    ui->nameEditor->setText(spec.name.c_str());
+    ui->inputEditor->setPorts(spec.inputs);
+    ui->outputEditor->setPorts(spec.outputs);
+    ui->designer->insertSpecs(spec.instances, spec.connections, spec.constants);
 }
 
 void CompEditor::save(){
     //Compose specs
     auto spec = CompSpec{};
-    spec.name = "Com";
-    spec.inputs.emplace_back(false, "int", "in0");
-    spec.outputs.emplace_back(false, "int", "out0");
-    spec.instances.emplace_back("acc", "acum.atom", 0, 0);
-    spec.connections.emplace_back("", "in0", "acc", "in");
-    spec.connections.emplace_back("acc", "out", "", "out0");
+    spec.name = ui->nameEditor->text().toStdString();
+    ui->inputEditor->collectPorts(spec.inputs);
+    ui->outputEditor->collectPorts(spec.outputs);
+    ui->designer->collectSpecs(spec.instances, spec.connections, spec.constants);
     //Write specs
     SpecCache::save(filePath().toStdString(), spec);
 }

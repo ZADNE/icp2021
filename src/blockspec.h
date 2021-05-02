@@ -7,20 +7,20 @@
 #include <vector>
 #include <variant>
 
-struct SlotSpec{
-    SlotSpec(bool templ, std::string type, std::string name):
+struct PortSpec{
+    PortSpec(bool templ, std::string type, std::string name):
         templ(templ), type(type), name(name) {};
 
     bool templ;
     std::string type;
     std::string name;
 };
-using SlotList = std::vector<SlotSpec>;
+using PortList = std::vector<PortSpec>;
 
 struct AtomSpec{
     std::string name;
-    SlotList inputs;
-    SlotList outputs;
+    PortList inputs;
+    PortList outputs;
     std::string body;
     std::string stateVars;
 };
@@ -80,8 +80,8 @@ using ConstantList = std::vector<ConstantSpec>;
 
 struct CompSpec{
     std::string name;
-    SlotList inputs;
-    SlotList outputs;
+    PortList inputs;
+    PortList outputs;
     InstanceList instances;
     ConnectionList connections;
     ConstantList constants;

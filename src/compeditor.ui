@@ -157,7 +157,7 @@
          </widget>
         </item>
         <item>
-         <widget class="VariableEditor" name="inputEditor" native="true">
+         <widget class="PortEditor" name="inputEditor" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -224,7 +224,7 @@
          </widget>
         </item>
         <item>
-         <widget class="VariableEditor" name="outputEditor" native="true">
+         <widget class="PortEditor" name="outputEditor" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -377,9 +377,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>VariableEditor</class>
+   <class>PortEditor</class>
    <extends>QWidget</extends>
-   <header>variableeditor.h</header>
+   <header>porteditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

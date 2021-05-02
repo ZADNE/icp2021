@@ -36,13 +36,13 @@ protected:
 
 private:
     //Functions for extracting specs from XML node
-    void extractPorts(xml_node* node, SlotList& sl);
+    void extractPorts(xml_node* node, PortList& sl);
     bool extractInstances(xml_node* node, InstanceList& il);
     bool extractConnections(xml_node* node, ConnectionList& cl);
     bool extractContants(xml_node* node, ConstantList& cl);
 
     //Functions for inserting specs into XML node
-    void insertPorts(xml_doc* doc, xml_node* node, const SlotList& sl);
+    void insertPorts(xml_doc* doc, xml_node* node, const PortList& sl);
     void insertInstances(xml_doc* doc, xml_node* node, const InstanceList& il);
     void insertConnections(xml_doc* doc, xml_node* node, const ConnectionList& cl);
     void insertConstants(xml_doc* doc, xml_node* node, const ConstantList& cl);

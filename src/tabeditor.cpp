@@ -74,6 +74,8 @@ bool TabEditor::editFile(QString path){
             this, &TabEditor::havingUnsavedChanges);
     connect(page, &BlockEditor::withoutUnsavedChanges,
             this, &TabEditor::withoutUnsavedChanges);
+    connect(page, &BlockEditor::editBlock,
+            this, &TabEditor::editFile);
     page->setFilePath(path, true);
     m_tabs.insert({path, page});
     //Remove no-block tab (if it is there)

@@ -24,9 +24,10 @@ SOURCES += \
     src/main.cpp \
     src/mainmenu.cpp \
     src/newfiledialog.cpp \
+    src/porteditor.cpp \
+    src/portwidget.cpp \
     src/speccache.cpp \
     src/tabeditor.cpp \
-    src/variableeditor.cpp \
     src/xmlutils.cpp
 
 HEADERS += \
@@ -45,13 +46,14 @@ HEADERS += \
     src/libraryexplorer.h \
     src/mainmenu.h \
     src/newfiledialog.h \
+    src/porteditor.h \
+    src/portwidget.h \
     src/speccache.h \
     src/tabeditor.h \
     src/rapidxml/rapidxml.hpp \
     src/rapidxml/rapidxml_iterators.hpp \
     src/rapidxml/rapidxml_print.hpp \
     src/rapidxml/rapidxml_utils.hpp \
-    src/variableeditor.h \
     src/xmlutils.h
 
 FORMS += \
@@ -62,8 +64,9 @@ FORMS += \
     src/libraryexplorer.ui \
     src/mainmenu.ui \
     src/newfiledialog.ui \
-    src/tabeditor.ui \
-    src/variableeditor.ui
+    src/porteditor.ui \
+    src/portwidget.ui \
+    src/tabeditor.ui
 
 TRANSLATIONS += \
     src/icp2021_en_US.ts
