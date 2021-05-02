@@ -10,6 +10,9 @@ namespace Ui {
 class AtomEditor;
 }
 
+///
+/// \brief Atomic block editor
+///
 class AtomEditor: public BlockEditor{
     Q_OBJECT
 

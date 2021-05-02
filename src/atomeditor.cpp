@@ -8,7 +8,7 @@
 #include <QTreeWidgetItem>
 #include <QTreeWidgetItemIterator>
 
-#include "blockcompiler.h"
+#include "blockbuilder.h"
 #include "speccache.h"
 
 
@@ -59,5 +59,5 @@ void AtomEditor::save(){
 }
 
 void AtomEditor::build(){
-    BlockCompiler::get().buildAtom(filePath().toStdString());
+    BlockBuilder::get().buildAtom(filePath().toStdString());
 }

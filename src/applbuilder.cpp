@@ -1,18 +1,23 @@
 /***
  * \author Tomas Dubsky (xdubsk08)
  * */
-#include "applcompiler.h"
+#include "applbuilder.h"
+
+#include <filesystem>
 
 #include "blockbuildutils.h"
 #include "speccache.h"
 
-ApplCompiler::ApplCompiler(const std::string& libPath):
+namespace fs = std::filesystem;
+
+ApplBuilder::ApplBuilder(const std::string& libPath):
     m_libPath(libPath){
 
 }
 
-bool ApplCompiler::buildAppl(const std::string& filePath, const ApplSpec& appl){
-    std::ofstream o{filePath, std::ofstream::trunc};
+bool ApplBuilder::buildAppl(const std::string& filePath, const ApplSpec& appl,
+                             std::set<std::string>& toBeBuilt){
+    std::ofstream o{m_libPath + filePath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
     //Includes
     o << "#include \"library.hpp\"\n\n";
@@ -62,8 +67,18 @@ bool ApplCompiler::buildAppl(const std::string& filePath, const ApplSpec& appl){
     o << "\t____appl.run();\n";
     o << "\treturn 0;\n";
     o << "}\n";
-
     o.close();
+
+    //Gather unbuilt blocks
+    std::error_code ec;
+    for (auto& inst: appl.instances){
+        auto absPath = m_libPath + inst.path;
+        auto xmlEditTime = fs::last_write_time(absPath, ec);
+        if (xmlEditTime > fs::last_write_time(absPath + ".hpp", ec)){
+            toBeBuilt.insert(inst.path);
+        }
+    }
+
     return true;
 }
 

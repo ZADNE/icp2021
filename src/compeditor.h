@@ -12,6 +12,9 @@ namespace Ui {
 class CompEditor;
 }
 
+///
+/// \brief Composite block editor
+///
 class CompEditor: public BlockEditor{
     Q_OBJECT
 

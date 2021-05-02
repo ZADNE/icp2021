@@ -10,6 +10,9 @@ namespace Ui {
 class ApplEditor;
 }
 
+///
+/// \brief Application editor
+///
 class ApplEditor: public BlockEditor{
     Q_OBJECT
 

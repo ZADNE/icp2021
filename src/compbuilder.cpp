@@ -1,17 +1,22 @@
 /***
  * \author Tomas Dubsky (xdubsk08)
  * */
-#include "compcompiler.h"
+#include "compbuilder.h"
+
+#include <filesystem>
 
 #include "blockbuildutils.h"
 #include "speccache.h"
 
-CompCompiler::CompCompiler(const std::string& libPath):
+namespace fs = std::filesystem;
+
+CompBuilder::CompBuilder(const std::string& libPath):
     m_libPath(libPath){
 
 }
 
-bool CompCompiler::buildComp(const std::string& headerPath, const CompSpec& comp){
+bool CompBuilder::buildComp(const std::string& headerPath, const CompSpec& comp,
+                             std::set<std::string>* toBeBuilt){
     std::ofstream o{headerPath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
     //Macro guard
@@ -83,5 +88,16 @@ bool CompCompiler::buildComp(const std::string& headerPath, const CompSpec& comp
     o << "};\n";
     o << "#endif" << std::endl;
     o.close();
+
+    //Gather unbuilt blocks
+    if (!toBeBuilt) return true;
+    std::error_code ec;
+    for (auto& inst: comp.instances){
+        auto absPath = m_libPath + inst.path;
+        auto xmlEditTime = fs::last_write_time(absPath, ec);
+        if (xmlEditTime > fs::last_write_time(absPath + ".hpp", ec)){
+            toBeBuilt->insert(inst.path);
+        }
+    }
     return true;
 }

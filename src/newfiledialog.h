@@ -20,6 +20,9 @@ enum class FileType{
     appl
 };
 
+///
+/// \brief Result a new file request dialog
+///
 struct NewFileRequest{
     NewFileRequest(FileType type, QString path):
         type(type), path(path){}
@@ -28,6 +31,9 @@ struct NewFileRequest{
     QString path;
 };
 
+///
+/// \brief Dialog for creating new file in library
+///
 class NewFileDialog : public QDialog{
     Q_OBJECT
 

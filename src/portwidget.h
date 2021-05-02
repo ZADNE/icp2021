@@ -18,6 +18,9 @@ enum class PortType{
     Input, Output
 };
 
+///
+/// \brief Small widget representing a port inside instance of a block
+///
 class PortWidget: public QWidget{
     Q_OBJECT
 

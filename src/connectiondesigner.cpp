@@ -62,6 +62,7 @@ BlockInstance* ConnectionDesigner::addBlock(QString relPath, QString name, QPoin
     item->setPos(pos);
     m_gScene->addItem(item);
     emit changed();
+    m_instanceN++;
     return inst;
 }
 
@@ -175,7 +176,8 @@ void ConnectionDesigner::dragMoveEvent(QDragMoveEvent* event){
 void ConnectionDesigner::dropEvent(QDropEvent* event){
     if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist")) {
         QString relPath = extractPathFromMime(*event->mimeData());
-        addBlock(relPath, "i" + QString::number(m_instanceN++), event->pos());
+        qDebug() << parent()->children().size();
+        addBlock(relPath, "i" + QString::number(m_instanceN), event->pos());
     } else {
         event->ignore();
     }
@@ -194,7 +196,7 @@ void ConnectionDesigner::mouseMoveEvent(QMouseEvent* event){
 
 void ConnectionDesigner::filterGraphicsChanges(const QList<QRectF>& region){
     //Heuristics to filter 'fake' changes from QGraphicsScene
-    if (region.size() >= 3){
+    if (region.size() != m_instanceN && region.size() > 0){
         const QRectF& rect = region[0];
         if ((rect.x() != 0 && rect.y() != 0) && rect.bottomLeft() != m_lastChangePos){
             m_lastChangePos = rect.bottomLeft();

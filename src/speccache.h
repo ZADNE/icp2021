@@ -10,9 +10,16 @@
 #include "blockspec.h"
 #include "xmlutils.h"
 
+///
+/// \brief Manager of block specifications (reduces disc usage)
+///
 class SpecCache: public XMLUtils{
-friend class BlockCompiler;
+friend class BlockBuilder;
 protected:
+
+    ///
+    /// \brief Cached specification of a block
+    ///
     struct CachedSpec{
         CachedSpec(const AnySpec& spec, bool needsSaving):
             spec(spec),
@@ -28,9 +35,10 @@ public:
     void operator=(SpecCache const&) = delete;
 
     void saveAll();
+    void dropCache();
 
-    static const AnySpec& fetchAny(const std::string& path);
-    const AnySpec& fetchAnySpec(const std::string& path);
+    static AnySpec fetchAny(const std::string& path);
+    AnySpec fetchAnySpec(const std::string& path);
 
     template<class Spec>static bool fetch(const std::string& path, Spec& spec){
         return cache().fetchSpec(path, spec);

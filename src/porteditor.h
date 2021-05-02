@@ -14,7 +14,10 @@ namespace Ui {
 class PortEditor;
 }
 
-class PortEditor : public QWidget{
+///
+/// \brief Editor of input/output ports
+///
+class PortEditor: public QWidget{
     Q_OBJECT
 
 public:

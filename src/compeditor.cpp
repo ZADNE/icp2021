@@ -6,7 +6,7 @@
 
 #include <QDebug>
 
-#include "blockcompiler.h"
+#include "blockbuilder.h"
 #include "speccache.h"
 
 CompEditor::CompEditor(QWidget *parent):
@@ -58,5 +58,5 @@ void CompEditor::save(){
 }
 
 void CompEditor::build(){
-    BlockCompiler::get().buildComp(filePath().toStdString());
+    BlockBuilder::get().buildComp(filePath().toStdString());
 }

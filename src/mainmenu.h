@@ -11,6 +11,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainMenu; }
 QT_END_NAMESPACE
 
+///
+/// \brief Main widget representing whole UI
+///
 class MainMenu : public QMainWindow{
     Q_OBJECT
 

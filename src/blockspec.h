@@ -7,6 +7,9 @@
 #include <vector>
 #include <variant>
 
+///
+/// \brief POD specification of a port
+///
 struct PortSpec{
     PortSpec(bool templ, std::string type, std::string name):
         templ(templ), type(type), name(name) {};
@@ -17,6 +20,9 @@ struct PortSpec{
 };
 using PortList = std::vector<PortSpec>;
 
+///
+/// \brief POD specification of an atomic block
+///
 struct AtomSpec{
     std::string name;
     PortList inputs;
@@ -25,7 +31,9 @@ struct AtomSpec{
     std::string stateVars;
 };
 
-//Instance of a block inside a composite block
+///
+/// \brief POD specification of a block inside composite block
+///
 struct InstanceSpec{
     InstanceSpec(){}
     InstanceSpec(std::string name, std::string path, int x, int y):
@@ -42,6 +50,9 @@ struct InstanceSpec{
 };
 using InstanceList = std::vector<InstanceSpec>;
 
+///
+/// \brief POD specification of a connection between two ports
+///
 struct ConnectionSpec{
     ConnectionSpec(){}
     ConnectionSpec(
@@ -62,6 +73,9 @@ struct ConnectionSpec{
 };
 using ConnectionList = std::vector<ConnectionSpec>;
 
+///
+/// \brief POD specification a constant value installed to port
+///
 struct ConstantSpec{
     ConstantSpec(){}
     ConstantSpec(
@@ -78,6 +92,9 @@ struct ConstantSpec{
 };
 using ConstantList = std::vector<ConstantSpec>;
 
+///
+/// \brief POD specification of a composite block
+///
 struct CompSpec{
     std::string name;
     PortList inputs;
@@ -87,6 +104,9 @@ struct CompSpec{
     ConstantList constants;
 };
 
+///
+/// \brief POD specification of an application
+///
 struct ApplSpec{
     std::string name;
     InstanceList instances;

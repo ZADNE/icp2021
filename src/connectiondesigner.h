@@ -16,13 +16,15 @@ class QGraphicsScene;
 class BlockInstance;
 class PortWidget;
 
+///
+/// \brief Designer of block instances and connections among them
+///
 class ConnectionDesigner: public QGraphicsView{
     Q_OBJECT
 
 public:
     explicit ConnectionDesigner(QWidget* parent = nullptr);
     ~ConnectionDesigner();
-
 
     void setMyPath(QString path);
 

@@ -1,14 +1,15 @@
 /***
  * \author Tomas Dubsky (xdubsk08)
  * */
-#ifndef BLOCKCOMPILER_H
-#define BLOCKCOMPILER_H
+#ifndef BLOCKBUILDER_H
+#define BLOCKBUILDER_H
 #include <string>
+#include <set>
 
 #include "blockspec.h"
-#include "atomcompiler.h"
-#include "compcompiler.h"
-#include "applcompiler.h"
+#include "atombuilder.h"
+#include "compbuilder.h"
+#include "applbuilder.h"
 
 namespace rapidxml{
     template<class Ch>class xml_document;
@@ -17,11 +18,14 @@ namespace rapidxml{
 using xml_doc = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
 
-class BlockCompiler{
+///
+/// \brief Builder for all block files (*.atom, *.comp, *.appl)
+///
+class BlockBuilder{
 public:
-    static BlockCompiler& get();
-    BlockCompiler(BlockCompiler const&) = delete;
-    void operator=(BlockCompiler const&) = delete;
+    static BlockBuilder& get();
+    BlockBuilder(BlockBuilder const&) = delete;
+    void operator=(BlockBuilder const&) = delete;
 
     bool openLibrary(const std::string& path);
 
@@ -30,12 +34,12 @@ public:
     //Atomic blocks
     bool buildAtom(const std::string& atomPath);
     //Composite blocks
-    bool buildComp(const std::string& compPath);
+    bool buildComp(const std::string& compPath, std::set<std::string>* toBeBuilt = nullptr);
     //Applications
     bool buildAppl(const std::string& applPath);
 
 protected:
-    BlockCompiler();
+    BlockBuilder();
 
 private:
     //Library initialization
@@ -45,9 +49,9 @@ private:
     std::string m_cppCompiler = "g++ ";
     std::string m_cppFlags = " -std=c++17 ";
 
-    AtomCompiler atomC;
-    CompCompiler compC{m_libPath};
-    ApplCompiler applC{m_libPath};
+    AtomBuilder atomB;
+    CompBuilder compB{m_libPath};
+    ApplBuilder applB{m_libPath};
 };
 
-#endif // BLOCKCOMPILER_H
+#endif // BLOCKBUILDER_H

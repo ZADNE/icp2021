@@ -7,6 +7,10 @@
 #include <QWidget>
 #include <QFileInfo>
 
+
+///
+/// \brief Abstract block editor
+///
 class BlockEditor: public QWidget{
     Q_OBJECT
 public:

@@ -1,15 +1,15 @@
 /***
  * \author Tomas Dubsky (xdubsk08)
  * */
-#include "atomcompiler.h"
+#include "atombuilder.h"
 
 #include "blockbuildutils.h"
 
-AtomCompiler::AtomCompiler(){
+AtomBuilder::AtomBuilder(){
 
 }
 
-bool AtomCompiler::buildAtom(const std::string& headerPath, const AtomSpec& atom){
+bool AtomBuilder::buildAtom(const std::string& headerPath, const AtomSpec& atom){
     std::ofstream o{headerPath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
     //Macro guard

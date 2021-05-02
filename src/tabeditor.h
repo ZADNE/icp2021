@@ -14,6 +14,9 @@ namespace Ui {
 class TabEditor;
 }
 
+///
+/// \brief Manager of block editors inside tabs
+///
 class TabEditor : public QWidget{
     Q_OBJECT
 

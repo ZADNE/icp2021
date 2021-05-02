@@ -9,15 +9,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    src/applcompiler.cpp \
+    src/applbuilder.cpp \
     src/appleditor.cpp \
-    src/atomcompiler.cpp \
+    src/atombuilder.cpp \
     src/atomeditor.cpp \
+    src/blockbuilder.cpp \
     src/blockbuildutils.cpp \
-    src/blockcompiler.cpp \
     src/blockeditor.cpp \
     src/blockinstance.cpp \
-    src/compcompiler.cpp \
+    src/compbuilder.cpp \
     src/compeditor.cpp \
     src/connectiondesigner.cpp \
     src/libraryexplorer.cpp \
@@ -31,16 +31,16 @@ SOURCES += \
     src/xmlutils.cpp
 
 HEADERS += \
-    src/applcompiler.h \
+    src/applbuilder.h \
     src/appleditor.h \
-    src/atomcompiler.h \
+    src/atombuilder.h \
     src/atomeditor.h \
+    src/blockbuilder.h \
     src/blockbuildutils.h \
-    src/blockcompiler.h \
     src/blockeditor.h \
     src/blockinstance.h \
     src/blockspec.h \
-    src/compcompiler.h \
+    src/compbuilder.h \
     src/compeditor.h \
     src/connectiondesigner.h \
     src/libraryexplorer.h \

@@ -32,11 +32,16 @@ void SpecCache::saveAll(){
     }
 }
 
-const AnySpec &SpecCache::fetchAny(const std::string& path){
+void SpecCache::dropCache(){
+    saveAll();
+    m_stash.clear();
+}
+
+AnySpec SpecCache::fetchAny(const std::string& path){
     return cache().fetchAnySpec(path);
 }
 
-const AnySpec& SpecCache::fetchAnySpec(const std::string& path){
+AnySpec SpecCache::fetchAnySpec(const std::string& path){
     //Look for it in stash
     auto it = m_stash.find(path);
     if (it != m_stash.end()){

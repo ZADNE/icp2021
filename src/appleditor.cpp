@@ -6,7 +6,7 @@
 
 #include <QDebug>
 
-#include "blockcompiler.h"
+#include "blockbuilder.h"
 #include "speccache.h"
 
 ApplEditor::ApplEditor(QWidget *parent):
@@ -48,5 +48,5 @@ void ApplEditor::save(){
 }
 
 void ApplEditor::build(){
-    BlockCompiler::get().buildAppl(filePath().toStdString());
+    BlockBuilder::get().buildAppl(filePath().toStdString());
 }

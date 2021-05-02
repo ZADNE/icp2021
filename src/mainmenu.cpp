@@ -12,7 +12,8 @@
 #include <QInputDialog>
 
 #include "newfiledialog.h"
-#include "blockcompiler.h"
+#include "blockbuilder.h"
+#include "speccache.h"
 
 MainMenu::MainMenu(QWidget *parent):
     QMainWindow(parent),
@@ -58,7 +59,7 @@ void MainMenu::openLibrary(QString libpath){
         ui->tabEditor->closeAllTabs();
         updateNoTabLabel();
         ui->libraryExplorer->loadLibrary(m_libPath);
-        BlockCompiler::get().openLibrary(m_libPath.toStdString());
+        BlockBuilder::get().openLibrary(m_libPath.toStdString());
         ui->tabEditor->setLibPath(m_libPath);
     }
 }
@@ -108,6 +109,7 @@ void MainMenu::renameThis(QString path){
         return;
     }
     //Renaming files or categories
+    SpecCache::cache().dropCache();
     QFileInfo fi{m_libPath + path};
     if (fi.isDir()){
         //Renaming category
@@ -133,6 +135,8 @@ void MainMenu::renameThis(QString path){
 }
 
 void MainMenu::deleteThis(QString path){
+    if (path == ".") return; //Cannot delete whole library
+    SpecCache::cache().dropCache();
     QFileInfo fi{m_libPath + path};
     if (fi.isDir()){
         //Removing directory

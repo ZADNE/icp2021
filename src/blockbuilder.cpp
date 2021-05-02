@@ -1,61 +1,82 @@
 /***
  * \author Tomas Dubsky (xdubsk08)
  * */
-#include "blockcompiler.h"
+#include "blockbuilder.h"
 
 #include <fstream>
+#include <filesystem>
+
+#include <QDebug>
 
 #include "speccache.h"
 
-BlockCompiler::BlockCompiler(){
+BlockBuilder::BlockBuilder(){
 
 }
 
-BlockCompiler& BlockCompiler::get(){
-    static BlockCompiler bc;
+BlockBuilder& BlockBuilder::get(){
+    static BlockBuilder bc;
     return bc;
 }
 
-bool BlockCompiler::openLibrary(const std::string& path){
+bool BlockBuilder::openLibrary(const std::string& path){
     m_libPath = path;
     SpecCache::cache().setLibPath(m_libPath);
     return initLibrary();
 }
 
-void BlockCompiler::setCppCompiler(const std::string& compiler){
+void BlockBuilder::setCppCompiler(const std::string& compiler){
     m_cppCompiler = compiler + ' ';
 }
 
-bool BlockCompiler::buildAtom(const std::string& atomPath){
+bool BlockBuilder::buildAtom(const std::string& atomPath){
     AtomSpec atom;
     if (!SpecCache::fetch(atomPath, atom)) return false;
     std::string headerPath = atomPath + ".hpp";
-    return atomC.buildAtom(headerPath, atom);
+    return atomB.buildAtom(m_libPath + headerPath, atom);
 }
 
-bool BlockCompiler::buildComp(const std::string& compPath){
+bool BlockBuilder::buildComp(const std::string& compPath, std::set<std::string>* toBeBuilt){
     CompSpec comp;
     if (!SpecCache::fetch(compPath, comp)) return false;
     std::string headerPath = compPath + ".hpp";
     try {
-        return compC.buildComp(headerPath, comp);
+        return compB.buildComp(headerPath, comp, toBeBuilt);
     }  catch (...) {
         return false;
     }
 }
 
-bool BlockCompiler::buildAppl(const std::string& applPath){
+bool BlockBuilder::buildAppl(const std::string& applPath){
     ApplSpec appl;
     if (!SpecCache::fetch(applPath, appl)) return false;
     std::string filePath = applPath + ".cpp";
     try {
-        return applC.buildAppl(filePath, appl);
+        std::set<std::string> toBeBuilt;
+        bool rvalue = applB.buildAppl(filePath, appl, toBeBuilt);
+        while (rvalue && !toBeBuilt.empty()){
+            std::string fp = *toBeBuilt.begin();
+            toBeBuilt.erase(toBeBuilt.begin());
+            auto ext = std::filesystem::path(fp).extension().string();
+            if (ext == ".atom"){
+                rvalue = buildAtom(fp);
+            } else if (ext == ".comp"){
+                rvalue = buildComp(fp, &toBeBuilt);
+            }
+        }
+        if (rvalue){
+            std::string command = m_cppCompiler + m_cppFlags
+                    + m_libPath + applPath + ".cpp -o " + m_libPath + appl.name;
+            qDebug() << QString::fromStdString(command);
+            std::system(command.c_str());
+        }
+        return rvalue;
     }  catch (...) {
         return false;
     }
 }
 
-bool BlockCompiler::initLibrary(){
+bool BlockBuilder::initLibrary(){
     auto headerPath = m_libPath + "/library.hpp";
     std::ifstream i{headerPath};
     if (i.good()) {

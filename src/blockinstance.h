@@ -20,6 +20,9 @@ class QGraphicsRectItem;
 class QVBoxLayout;
 class QGraphicsScene;
 
+///
+/// \brief Widget representing instance of a block in a connection editor
+///
 class BlockInstance: public QWidget{
     Q_OBJECT
 

@@ -15,6 +15,9 @@ namespace Ui {
 class LibraryExplorer;
 }
 
+///
+/// \brief Explorer of a library (i.e. folder)
+///
 class LibraryExplorer : public QWidget{
     Q_OBJECT
 

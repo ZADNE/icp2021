@@ -12,6 +12,9 @@ namespace rapidxml{
 using xml_doc = rapidxml::xml_document<char>;
 using xml_node = rapidxml::xml_node<char>;
 
+///
+/// \brief State-less functions for parsing block specifications to/from XML files
+///
 class XMLUtils{
 public:
     XMLUtils(XMLUtils const&) = delete;
