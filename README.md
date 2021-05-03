@@ -1,27 +1,27 @@
-#Block Creator
+# Block Creator
 ICP 2021 semestrální projekt
 Autor: Tomáš Dubský (xdubsk08)
 
 Použité knihovny (krom Qt):
 rapidxml @ http://rapidxml.sourceforge.net/
 
-##Stručný popis:
-###Uložení do souboru:
+## Stručný popis:
+### Uložení do souboru:
 Knihovnu tvoří adresář (přiložena ukázková knihovna "exampleLib").
 Podadresáře knihovny tvoří kategorie.
 Atomický block je reprezentován XML souborem s koncovkou "*.atom", kompozitní "*.comp", aplikace "*.appl".
-###Generování výstupu:
+### Generování výstupu:
 Každého soubor bloku (se podle jeho typu a dat) sestaví na hlavičkový soubor.
 Soubor aplikace se sestaví na C++ zdrojový soubor s main funkcí.
 Uživatel může bloky sestavovat každý sám nebo se automaticky sestaví všechny závislé bloky při generování aplikace.
 Při sestavování aplikace se rovnou zdrojové soubory zkompilují (g++) na výstupní spustitelnou aplikaci.
-###Uživatelské rozhraní:
+### Uživatelské rozhraní:
 Vlevo je prohlížeč knihovny, vpravo je záložkový editor bloků/aplikací.
 Porty se blokům přidávají/odebírají přes pravé tlačítko.
 Instance bloků do kompozitních bloků lze přidat tažením z knihovny vlevo.
 Porty se propojují klikáním na příslušné tlačítka portů instancí.
 Konstantní vstupy/rozpojení spojů je v rozhrnovacím menu vedle tlačítka portu.
-###Ukázková knihovna:
+### Ukázková knihovna:
 Ukázková knihovna obsahuje některé "standardní" bloky,
 např.: algebraické a boolovské operace, výstup atd.
 Dále obsahuje "uživatelskou" aplikaci ("AsteroidWatcher"), která tyto standardní bloky využívá.
