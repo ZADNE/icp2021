@@ -2,7 +2,7 @@
  * \author Tomas Dubsky (xdubsk08)
  * */
 #include "porteditor.h"
-#include "ui_variableeditor.h"
+#include "ui_porteditor.h"
 
 #include <QDebug>
 
@@ -11,8 +11,6 @@ PortEditor::PortEditor(QWidget *parent):
     ui(new Ui::PortEditor)
 {
     ui->setupUi(this);
-
-    ui->vars->setColumnWidth(0, 40);
 
     connect(ui->vars, &QTreeWidget::customContextMenuRequested,
             this, &PortEditor::contextMenu);
@@ -35,6 +33,10 @@ int PortEditor::count(){
     return ui->vars->topLevelItemCount();
 }
 
+void PortEditor::setName(QString name){
+    m_name = name;
+}
+
 void PortEditor::contextMenu(const QPoint &point){
     QModelIndex index = ui->vars->indexAt(point);
     if (index.isValid()){ //If clicked on a port
@@ -44,16 +46,16 @@ void PortEditor::contextMenu(const QPoint &point){
     }
 }
 
-void PortEditor::addPort(bool templ, QString type, QString name){
+void PortEditor::addPort(/*bool templ, */QString type, QString name){
     auto* port = new QTreeWidgetItem{static_cast<QTreeWidget*>(nullptr), QStringList()
-        << "" << type << name};
+        /*<< ""*/ << type << name};
     ui->vars->addTopLevelItem(port);
     port->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-    port->setCheckState(0,  templ ? Qt::Checked : Qt::Unchecked);
+   // port->setCheckState(0,  templ ? Qt::Checked : Qt::Unchecked);
 }
 
 void PortEditor::addNewPort(){
-    addPort(false, "int", QStringLiteral("port%1").arg(ui->vars->topLevelItemCount()));
+    addPort(/*false, */"int", m_name + QString::number(ui->vars->topLevelItemCount()));
 }
 
 void PortEditor::removeCurrentPort(){
@@ -67,16 +69,20 @@ void PortEditor::removeCurrentPort(){
 void PortEditor::collectPorts(PortList& portl){
     auto it = QTreeWidgetItemIterator{ui->vars};
     while (*it){
-        portl.emplace_back(
+        /*portl.emplace_back(
             (*it)->checkState(0) == Qt::Checked ? true : false,
             (*it)->text(1).toStdString(),
             (*it)->text(2).toStdString());
+        ++it;*/
+        portl.emplace_back(
+            (*it)->text(0).toStdString(),
+            (*it)->text(1).toStdString());
         ++it;
     }
 }
 
 void PortEditor::setPorts(const PortList& portl){
     for(auto& port: portl){
-        addPort(port.templ, port.type.c_str(), port.name.c_str());
+        addPort(/*port.templ, */port.type.c_str(), port.name.c_str());
     }
 }

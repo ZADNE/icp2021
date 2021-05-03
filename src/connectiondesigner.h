@@ -11,10 +11,10 @@
 #include <QGraphicsLineItem>
 
 #include "blockspec.h"
+#include "portwidget.h"
 
 class QGraphicsScene;
 class BlockInstance;
-class PortWidget;
 
 ///
 /// \brief Designer of block instances and connections among them
@@ -29,6 +29,9 @@ public:
     void setMyPath(QString path);
 
 signals:
+    void blockEdited(QString path);
+    void blockRenamed(QString oldPath, QString newPath);
+
     void editBlock(QString path);
     void changed();
     void appendInstanceSpecs(InstanceList& instl, ConstantList& cnstl);
@@ -39,6 +42,8 @@ public slots:
     void insertSpecs(InstanceList& instl, ConnectionList& connl, ConstantList& cnstl);
     void connectPort(PortWidget* w, QPointF pos);
     void collectSpecs(InstanceList& instl, ConnectionList& connl, ConstantList& cnstl);
+
+    void reloadPorts(PortType type, const PortList& ports);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -58,9 +63,17 @@ private:
     bool validPath(const QString& path);
 
     QGraphicsScene* m_gScene;
-    int m_instanceN = 0;
+    size_t m_instanceN = 0;
     QString m_myPath;//path of this block
     QPointF m_lastChangePos;
+
+    //My ports
+    using PortWidgetList = std::vector<std::pair<PortWidget*, QGraphicsRectItem*>>;
+    PortWidgetList m_inputs;
+    PortWidgetList m_outputs;
+    void rebuildPorts(const PortList& ports, PortType type, PortWidgetList& widgets);
+    PortWidget* addPort(const PortSpec& port, PortType type);
+    void repositionPorts();
 
     //Connection related
     struct Connection{

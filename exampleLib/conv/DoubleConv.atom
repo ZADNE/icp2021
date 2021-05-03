@@ -1,0 +1,21 @@
+<ATOM NAME="DoubleConv">
+	<INPUT_PORTS>
+		<fromBool>bool</fromBool>
+		<fromInt>int</fromInt>
+		<fromFloat>float</fromFloat>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<out>double</out>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (fromBool){
+  out(static_cast&lt;double&gt;(fromBool()));
+}
+if (fromInt){
+  out(static_cast&lt;double&gt;(fromInt()));
+}
+if (fromFloat){
+  out(static_cast&lt;double&gt;(fromFloat()));
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

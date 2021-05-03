@@ -1,0 +1,24 @@
+<ATOM NAME="StopWatch">
+	<INPUT_PORTS>
+		<reset>bool</reset>
+		<on_off>bool</on_off>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<time>int</time>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>//Reset
+if (reset &amp;&amp; reset() == true){
+  counter = 0;
+}
+//Turn on/off
+if (on_off){
+  emit = on_off();
+}
+//Emit time
+if (emit){
+  time(++counter);
+}</FUNCTION_BODY>
+	<STATE_VARIABLES>int counter = 0;
+bool emit = true;</STATE_VARIABLES>
+</ATOM>
+

@@ -41,11 +41,6 @@ MainMenu::MainMenu(QWidget *parent):
             ui->tabEditor, &TabEditor::saveWork);
 
     updateNoTabLabel();
-
-    //Convenience
-    #ifdef QT_DEBUG
-        openLibrary("exampleLib");
-    #endif
 }
 
 MainMenu::~MainMenu(){
@@ -124,9 +119,10 @@ void MainMenu::renameThis(QString path){
     } else {
         //Renaming file
         QString newName = renameDialog(tr("block"), fi.completeBaseName());
+        QFileInfo helper{path};
         if (!newName.isEmpty()){
             if (ui->tabEditor->renameFile(
-                        path, fi.path() + "/" + newName + "." + fi.suffix())){
+                        path, helper.path() + "/" + newName + "." + fi.suffix())){
                 //Successfully renamed
                 ui->libraryExplorer->reloadLibrary();
             }

@@ -6,9 +6,13 @@
 #include <QDebug>
 
 QString BlockEditor::m_libPath = QString{};
+BlockEditSignaller BlockEditor::sig = BlockEditSignaller{};
 
-BlockEditor::BlockEditor(QWidget *parent) : QWidget(parent){
-
+BlockEditor::BlockEditor(QWidget* parent): QWidget(parent){
+    connect(&sig, &BlockEditSignaller::blockEdited,
+            this, &BlockEditor::blockEdited);
+    connect(&sig, &BlockEditSignaller::blockRenamed,
+            this, &BlockEditor::blockRenamed);
 }
 
 BlockEditor::~BlockEditor(){
@@ -20,8 +24,9 @@ void BlockEditor::setLibPath(QString libPath){
 }
 
 void BlockEditor::setFilePath(QString relPath, bool loadFile){
-    m_relPath = relPath;
     if (loadFile){
+        //Loading file
+        m_relPath = relPath;
         QFile file{m_libPath + relPath};
         if (file.exists()){
             load();
@@ -31,9 +36,15 @@ void BlockEditor::setFilePath(QString relPath, bool loadFile){
                 //Create it by saving empty block
                 file.close();
                 save();
+                load();
             }
         }
         m_unsavedChanges = false;
+    } else {
+        //Renamed this file
+        QString oldPath = m_relPath;
+        m_relPath = relPath;
+        emit sig.blockRenamed(oldPath, relPath);
     }
 }
 
@@ -46,6 +57,7 @@ void BlockEditor::saveWork(){
         m_unsavedChanges = false;
         save();
         emit withoutUnsavedChanges(this);
+        emit sig.blockEdited(filePath());
     }
 }
 

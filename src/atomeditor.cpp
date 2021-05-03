@@ -28,6 +28,9 @@ AtomEditor::AtomEditor(QWidget *parent):
             this, &AtomEditor::editedWork);
     connect(ui->nameEditor, &QLineEdit::textChanged,
             this, &AtomEditor::editedWork);
+
+    ui->inputEditor->setName("in");
+    ui->outputEditor->setName("out");
 }
 
 AtomEditor::~AtomEditor(){

@@ -1,0 +1,17 @@
+<ATOM NAME="CautionToText">
+	<INPUT_PORTS>
+		<caution>bool</caution>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<text>std::string</text>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (caution){
+  if (caution()){
+    text(&quot;Mayday!!!&quot;);
+  } else {
+    text(&quot;We&apos;re fine&quot;);
+  }
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

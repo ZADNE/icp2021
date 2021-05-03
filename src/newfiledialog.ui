@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Tomas Dubsky (xdubsk08)</author>
  <class>NewFileDialog</class>
  <widget class="QDialog" name="NewFileDialog">
   <property name="geometry">

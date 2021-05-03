@@ -38,6 +38,10 @@ public:
     QPointF getPosition() const;
     QString getInstName() const;
 
+    void setPortName(QString name);
+    void setDataType(QString dataType);
+    void setInstName(QString name);
+
 
 signals:
     void changed();
@@ -60,6 +64,7 @@ private:
     QString m_instName;
 
     QGraphicsRectItem* m_parentRect = nullptr;
+    void updateButtonText();
 private slots:
     void connectPort_private();
     void disconnectPort_private();

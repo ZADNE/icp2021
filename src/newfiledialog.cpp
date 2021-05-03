@@ -31,7 +31,6 @@ NewFileRequest NewFileDialog::getResult(){
 }
 
 QString NewFileDialog::constructRelPath(){
-    qDebug() << m_relPath + "/" + ui->name->text() + ui->suffix->text();
     return m_relPath + "/" + ui->name->text() + ui->suffix->text();
 }
 

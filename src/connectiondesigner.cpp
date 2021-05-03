@@ -56,6 +56,10 @@ BlockInstance* ConnectionDesigner::addBlock(QString relPath, QString name, QPoin
 
     connect(this, &ConnectionDesigner::appendInstanceSpecs,
             inst, &BlockInstance::appendMySpecs);
+    connect(this, &ConnectionDesigner::blockEdited,
+            inst, &BlockInstance::classEdited);
+    connect(this, &ConnectionDesigner::blockRenamed,
+            inst, &BlockInstance::classRenamed);
     auto* proxy = new QGraphicsProxyWidget(item);
     proxy->setWidget(inst);
     item->setFlag(QGraphicsItem::ItemIsMovable);
@@ -102,14 +106,36 @@ void ConnectionDesigner::insertSpecs(InstanceList& instl, ConnectionList& connl,
     }
     //Connections
     for (auto& conn: connl){
-        auto it = ports.find(conn.from + "." + conn.from_port);
-        if (it == ports.end()) continue;
-        auto* from = it->second;
-        it = ports.find(conn.to + "." + conn.to_port);
-        if (it == ports.end()) continue;
-        auto* to = it->second;
+        PortWidget* from = nullptr;
+        if (conn.from != ""){
+            auto it = ports.find(conn.from + "." + conn.from_port);
+            if (it == ports.end()) continue;
+            from = it->second;
+        } else {
+            for (auto& pair: m_inputs){
+                if (pair.first->getPortName().toStdString() == conn.from_port){
+                    from = pair.first;
+                    break;
+                }
+            }
+        }
+        PortWidget* to = nullptr;
+        if (conn.to != ""){
+            auto it = ports.find(conn.to + "." + conn.to_port);
+            if (it == ports.end()) continue;
+            to = it->second;
+        } else {
+            for (auto& pair: m_outputs){
+                if (pair.first->getPortName().toStdString() == conn.to_port){
+                    to = pair.first;
+                    break;
+                }
+            }
+        }
+        if (!from || !to) continue;
         connectPorts(from, to);
     }
+    redrawConnections();
 }
 
 void ConnectionDesigner::connectPort(PortWidget* w, QPointF pos){
@@ -120,6 +146,7 @@ void ConnectionDesigner::connectPort(PortWidget* w, QPointF pos){
         m_connFrom = w;
         if (!m_line){
             m_line = m_gScene->addLine(0, 0, 0, 0);
+            m_line->setZValue(100);
         }
         m_line->setPos(m_connStart);
         m_line->setPen(m_connPen);
@@ -147,8 +174,20 @@ void ConnectionDesigner::collectSpecs(InstanceList& instl, ConnectionList& connl
     }
 }
 
+void ConnectionDesigner::reloadPorts(PortType type, const PortList& ports){
+    if (type == PortType::Input){
+        rebuildPorts(ports, PortType::Input, m_inputs);
+    } else {
+        rebuildPorts(ports, PortType::Output, m_outputs);
+    }
+    repositionPorts();
+    redrawConnections();
+}
+
 void ConnectionDesigner::resizeEvent(QResizeEvent* event){
     m_gScene->setSceneRect(QRectF(QPointF(0, 0), event->size()));
+    repositionPorts();
+    redrawConnections();
 }
 
 void ConnectionDesigner::dragEnterEvent(QDragEnterEvent* event){
@@ -176,7 +215,6 @@ void ConnectionDesigner::dragMoveEvent(QDragMoveEvent* event){
 void ConnectionDesigner::dropEvent(QDropEvent* event){
     if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist")) {
         QString relPath = extractPathFromMime(*event->mimeData());
-        qDebug() << parent()->children().size();
         addBlock(relPath, "i" + QString::number(m_instanceN), event->pos());
     } else {
         event->ignore();
@@ -196,7 +234,7 @@ void ConnectionDesigner::mouseMoveEvent(QMouseEvent* event){
 
 void ConnectionDesigner::filterGraphicsChanges(const QList<QRectF>& region){
     //Heuristics to filter 'fake' changes from QGraphicsScene
-    if (region.size() != m_instanceN && region.size() > 0){
+    if (region.size() > 0){
         const QRectF& rect = region[0];
         if ((rect.x() != 0 && rect.y() != 0) && rect.bottomLeft() != m_lastChangePos){
             m_lastChangePos = rect.bottomLeft();
@@ -224,6 +262,69 @@ bool ConnectionDesigner::validPath(const QString& path){
         }
     }
     return false;
+}
+
+void ConnectionDesigner::rebuildPorts(const PortList& ports, PortType type, PortWidgetList& widgets){
+    //Remove ports
+    for (size_t i = ports.size(); i < widgets.size(); ++i) {
+        emit widgets[i].first->disconnectPort(widgets[i].first);
+        delete widgets[i].first;
+        m_gScene->removeItem(widgets[i].second);
+        delete widgets[i].second;
+    }
+    if (widgets.size() > ports.size()){
+        widgets.resize(ports.size());
+    }
+    //Rename ports
+    for (size_t i = 0; i < ports.size() && i < widgets.size(); ++i) {
+        widgets[i].first->setDataType(QString::fromStdString(ports[i].type));
+        widgets[i].first->setPortName(QString::fromStdString(ports[i].name));
+    }
+    //Add new ports
+    for (size_t i = widgets.size(); i < ports.size(); ++i) {
+        addPort(ports[i], type);
+    }
+}
+
+PortWidget* ConnectionDesigner::addPort(const PortSpec& port, PortType type){
+    //Create button
+    auto* item = new QGraphicsRectItem();
+    auto* portW = new PortWidget(
+                type == PortType::Input ? PortType::Output : PortType::Input,
+                QString::fromStdString(port.type),
+                QString::fromStdString(port.name),
+                "",
+                item);
+    connect(portW, &PortWidget::changed,
+            this, &ConnectionDesigner::changed);
+    connect(portW, &PortWidget::connectPort,
+            this, &ConnectionDesigner::connectPort);
+    //Add the button to layout
+    if (type == PortType::Input){
+        m_inputs.emplace_back(portW, item);
+    } else {
+        m_outputs.emplace_back(portW, item);
+    }
+    auto* proxy = new QGraphicsProxyWidget(item);
+    proxy->setWidget(portW);
+    m_gScene->addItem(item);
+    return portW;
+}
+
+void ConnectionDesigner::repositionPorts(){
+    //Recalculate potitions of port widgets
+    qreal i = 0;
+    for (auto& pair: m_inputs){
+        pair.second->setPos(0, (i + 0.5) / (qreal)m_inputs.size() * (qreal)size().height());
+        i++;
+    }
+    i = 0;
+    for (auto& pair: m_outputs){
+        pair.second->setPos((qreal)size().width() - (qreal)pair.first->size().width() + 23.0,
+                            (i + 0.5) / (qreal)m_outputs.size() * (qreal)size().height());
+        i++;
+    }
+    m_gScene->update();
 }
 
 void ConnectionDesigner::connectPorts(PortWidget* from, PortWidget* to){

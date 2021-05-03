@@ -5,27 +5,34 @@
 
 #include "blockbuildutils.h"
 
-AtomBuilder::AtomBuilder(){
+AtomBuilder::AtomBuilder(const std::string& libPath):
+    m_libPath(libPath){
 
 }
 
 bool AtomBuilder::buildAtom(const std::string& headerPath, const AtomSpec& atom){
-    std::ofstream o{headerPath, std::ofstream::trunc};
+    std::ofstream o{m_libPath + headerPath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
     //Macro guard
-    BlockBuildUtils::writeGuardStartAndLib(o, atom.name);
+    BlockBuildUtils::writeGuardStart(o, atom.name);
     //Templates
-    BlockBuildUtils::writeTemplates(o, atom.inputs, atom.outputs);
+    //BlockBuildUtils::writeTemplates(o, atom.inputs, atom.outputs);
     //Class
     o << "class " << atom.name << "{\n";
     o << "public:\n";
     //Constructor
-    o << '\t' << atom.name << "(bool* ____changed):\n\t";
-    for (int i = 0; i < (int)atom.inputs.size() - 1; ++i){
-        o << atom.inputs[i].name << "(____changed), ";
-    }
-    if (atom.inputs.size() >= 1){//Last without the comma...
-        o << atom.inputs.back().name << "(____changed)";
+    o << '\t' << atom.name << "(bool* ____changed)";
+    if (!atom.inputs.empty()){
+        //Inputs initializer list
+        o << ":\n\t";
+        for (int i = 0; i < (int)atom.inputs.size() - 1; ++i){
+            o << atom.inputs[i].name << "(____changed), ";
+        }
+        if (atom.inputs.size() >= 1){//Last without the comma...
+            o << atom.inputs.back().name << "(____changed)";
+        }
+    } else {
+        o << "\n\t";
     }
     o << "{}\n\t";
     //Func

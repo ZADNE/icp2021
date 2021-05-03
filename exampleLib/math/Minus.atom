@@ -1,0 +1,14 @@
+<ATOM NAME="Minus">
+	<INPUT_PORTS>
+		<a>double</a>
+		<b>double</b>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<r>double</r>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (a &amp;&amp; b){
+  r(a() - b());
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

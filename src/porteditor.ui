@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Tomas Dubsky (xdubsk08)</author>
  <class>PortEditor</class>
  <widget class="QWidget" name="PortEditor">
   <property name="geometry">
@@ -43,20 +44,6 @@
      <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
-     <attribute name="headerDefaultSectionSize">
-      <number>80</number>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Tmpl</string>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-     </column>
      <column>
       <property name="text">
        <string>Type</string>

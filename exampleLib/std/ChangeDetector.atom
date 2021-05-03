@@ -1,0 +1,19 @@
+<ATOM NAME="ChangeDetector">
+	<INPUT_PORTS>
+		<in>int</in>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<newValue>int</newValue>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (in){
+  int inValue = in();
+  if (inValue != prevValue || noValueYet){
+    noValueYet = false;
+    prevValue = inValue;
+    newValue(inValue);
+  }
+}</FUNCTION_BODY>
+	<STATE_VARIABLES>int prevValue;
+bool noValueYet = true;</STATE_VARIABLES>
+</ATOM>
+

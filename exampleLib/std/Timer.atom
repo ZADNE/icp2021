@@ -1,0 +1,21 @@
+<ATOM NAME="Timer">
+	<INPUT_PORTS>
+		<set>int</set>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<timeOut>bool</timeOut>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (set){
+  time = 0;
+  timer = set();
+} else {
+  time++;
+  if (time == timer){
+    timeOut(true);
+  }
+}
+</FUNCTION_BODY>
+	<STATE_VARIABLES>int time = 0;
+int timer = 0;</STATE_VARIABLES>
+</ATOM>
+

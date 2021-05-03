@@ -21,7 +21,8 @@ bool ApplBuilder::buildAppl(const std::string& filePath, const ApplSpec& appl,
     if (!o.good()) return false;//Cannot create the file :-/
     //Includes
     o << "#include \"library.hpp\"\n\n";
-    BlockBuildUtils::writeInstanceIncludes(o, appl.instances);
+    size_t undive = std::count(filePath.begin(), filePath.end(), '/') - 1;
+    BlockBuildUtils::writeInstanceIncludes(o, appl.instances, undive);
     //Class
     o << "class " << appl.name << ": public ____Signaller{\n";
     o << "public:\n";
@@ -52,12 +53,17 @@ bool ApplBuilder::buildAppl(const std::string& filePath, const ApplSpec& appl,
 
     o << '\n';
     //Main loop
+    if (appl.maxSteps != 0){
+        o << "\t\tsize_t ____c = 0u;\n";
+        o << "\t\tconst size_t ____maxSteps = " << std::to_string(appl.maxSteps) << ";\n";
+    }
     o << "\t\tdo {\n";
     o << "\t\t\t____changed = false;\n";
     for (auto& inst: appl.instances){
         o << "\t\t\t" << inst.name << ".func();\n";
     }
-    o << "\t\t} while(____changed);\n";
+    //End condition
+    o << "\t\t} while(____changed" << (appl.maxSteps != 0 ? " && (++____c < ____maxSteps)" : "") << ");\n";
     o << "\t}\n";
     o << "};\n";
     o << '\n';
@@ -74,7 +80,7 @@ bool ApplBuilder::buildAppl(const std::string& filePath, const ApplSpec& appl,
     for (auto& inst: appl.instances){
         auto absPath = m_libPath + inst.path;
         auto xmlEditTime = fs::last_write_time(absPath, ec);
-        if (xmlEditTime > fs::last_write_time(absPath + ".hpp", ec)){
+        if (xmlEditTime > fs::last_write_time(absPath + ".hpp", ec) || ec){
             toBeBuilt.insert(inst.path);
         }
     }

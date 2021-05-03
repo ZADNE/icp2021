@@ -30,7 +30,7 @@ PortWidget::PortWidget(PortType portType, QString dataType,
 {
     ui->setupUi(this);
     //Text
-    ui->button->setText(dataType + " " + portName);
+    updateButtonText();
     if (portType == PortType::Input){
         ui->toolButton->addAction(ui->actionSetConst);
         ui->toolButton->addAction(ui->actionDisconnect);
@@ -64,9 +64,9 @@ QString PortWidget::getConstValue() const {
 QPointF PortWidget::getPosition() const {
     QPoint offset = ui->button->pos();
     if (m_type == PortType::Output){
-        offset.rx() += ui->button->size().width() - 8;
+        offset.rx() += ui->button->size().width() - 4;
     } else {
-        offset.rx() += 8;
+        offset.rx() += 4;
     }
     offset.ry() += ui->button->size().height() / 2;
     offset.rx() += geometry().x();
@@ -78,6 +78,20 @@ QPointF PortWidget::getPosition() const {
 
 QString PortWidget::getInstName() const{
     return m_instName;
+}
+
+void PortWidget::setPortName(QString name){
+    m_portName = name;
+    updateButtonText();
+}
+
+void PortWidget::setDataType(QString dataType){
+    m_dataType = dataType;
+    updateButtonText();
+}
+
+void PortWidget::setInstName(QString name){
+    m_instName = name;
 }
 
 void PortWidget::setConst(QString value){
@@ -93,11 +107,15 @@ void PortWidget::setConst(QString value){
 void PortWidget::openConstDialog(){
     QString newValue = QInputDialog::getText(
                 nullptr, tr("Set const..."),
-                tr("Enter new constant for ") + m_portName + ":", QLineEdit::Normal,
+                tr("Enter new (or remove) constant for ") + m_portName + ":", QLineEdit::Normal,
                 m_constValue);
     if (!newValue.isNull() && newValue != m_constValue){
         setConst(newValue);
     }
+}
+
+void PortWidget::updateButtonText(){
+    ui->button->setText(m_dataType + " " + m_portName);
 }
 
 void PortWidget::connectPort_private(){

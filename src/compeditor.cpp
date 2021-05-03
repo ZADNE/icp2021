@@ -28,6 +28,20 @@ CompEditor::CompEditor(QWidget *parent):
             this, &BlockEditor::editBlock);
     connect(ui->designer, &ConnectionDesigner::changed,
             this, &BlockEditor::editedWork);
+
+    connect(this, &CompEditor::blockEdited,
+            ui->designer, &ConnectionDesigner::blockEdited);
+    connect(this, &CompEditor::blockRenamed,
+            ui->designer, &ConnectionDesigner::blockRenamed);
+
+
+    connect(ui->inputEditor, &PortEditor::edited,
+            this, &CompEditor::reloadInputs);
+    connect(ui->outputEditor, &PortEditor::edited,
+            this, &CompEditor::reloadOutputs);
+
+    ui->inputEditor->setName("in");
+    ui->outputEditor->setName("out");
 }
 
 CompEditor::~CompEditor(){
@@ -59,4 +73,18 @@ void CompEditor::save(){
 
 void CompEditor::build(){
     BlockBuilder::get().buildComp(filePath().toStdString());
+}
+
+void CompEditor::reloadInputs(){
+    //Read specs
+    auto spec = PortList{};
+    ui->inputEditor->collectPorts(spec);
+    ui->designer->reloadPorts(PortType::Input, spec);
+}
+
+void CompEditor::reloadOutputs(){
+    //Read specs
+    auto spec = PortList{};
+    ui->outputEditor->collectPorts(spec);
+    ui->designer->reloadPorts(PortType::Output, spec);
 }

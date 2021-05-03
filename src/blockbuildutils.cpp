@@ -8,7 +8,7 @@
 
 #include "speccache.h"
 
-void BlockBuildUtils::writeTemplates(std::ofstream& o, const PortList& inputs, const PortList& outputs){
+/*void BlockBuildUtils::writeTemplates(std::ofstream& o, const PortList& inputs, const PortList& outputs){
     std::set<std::string> templates;
     for (auto& slot: inputs){
         if (slot.templ) templates.insert(slot.type);
@@ -27,22 +27,25 @@ void BlockBuildUtils::writeTemplates(std::ofstream& o, const PortList& inputs, c
         }
         o << "> ";
     }
-}
+}*/
 
 
-void BlockBuildUtils::writeGuardStartAndLib(std::ofstream& o, std::string blockName){
+void BlockBuildUtils::writeGuardStart(std::ofstream& o, std::string blockName){
     //Guardify name
     std::transform(blockName.begin(), blockName.end(), blockName.begin(), std::toupper);
     blockName.append("_H");
     //Write
     o << "#ifndef " << blockName << '\n';
     o << "#define " << blockName << '\n';
-    o << "#include \"library.hpp\"\n";
 }
 
-void BlockBuildUtils::writeInstanceIncludes(std::ofstream& o, const InstanceList& il){
+void BlockBuildUtils::writeInstanceIncludes(std::ofstream& o, const InstanceList& il, size_t undive){
     for (auto& inst: il){
-        o << "#include \"" << inst.path << ".hpp\"\n";
+        o << "#include \"";
+        for (size_t i = 0; i < undive; i++){
+            o << "../";
+        }
+        o << inst.path << ".hpp\"\n";
     }
     o << '\n';
 }
@@ -55,7 +58,7 @@ void BlockBuildUtils::writePortNameSetters(std::ofstream& o, const std::string& 
 
 void BlockBuildUtils::writePortNameSettersForAtomBlocks(std::ofstream& o, const InstanceList& il){
     for (auto& inst: il){
-        auto& instOf = SpecCache::fetchAny(inst.path);
+        auto instOf = SpecCache::fetchAny(inst.path);
         if (std::holds_alternative<AtomSpec>(instOf)){
             //Instance of atomic block
             auto& atom = std::get<AtomSpec>(instOf);

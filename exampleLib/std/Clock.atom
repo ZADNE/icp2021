@@ -1,0 +1,12 @@
+<ATOM NAME="Clock">
+	<INPUT_PORTS/>
+	<OUTPUT_PORTS>
+		<c0>bool</c0>
+		<c1>int</c1>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>c0(true);
+c1(1);
+</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

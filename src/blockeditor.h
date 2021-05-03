@@ -7,6 +7,12 @@
 #include <QWidget>
 #include <QFileInfo>
 
+class BlockEditSignaller: public QObject{
+    Q_OBJECT
+signals:
+    void blockEdited(QString otherPath);
+    void blockRenamed(QString oldPath, QString newPath);
+};
 
 ///
 /// \brief Abstract block editor
@@ -24,15 +30,19 @@ public:
 
     bool hasUnsavedChanges() { return m_unsavedChanges; }
 
+    static BlockEditSignaller sig;
+
 signals:
     void havingUnsavedChanges(BlockEditor* editor);
     void withoutUnsavedChanges(BlockEditor* editor);
     void editBlock(QString path);//Request to edit other block
+    void blockEdited(QString otherPath);//Notification that other block was edited
+    void blockRenamed(QString oldPath, QString newPath);//Notification that other block was renamed
 
 public slots:
-    virtual void saveWork() final;
-    virtual void buildWork() final;
-    virtual void editedWork() final;
+    void saveWork();
+    void buildWork();
+    void editedWork();
 
 protected:
     virtual void load() = 0;

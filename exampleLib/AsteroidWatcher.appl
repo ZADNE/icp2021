@@ -1,0 +1,30 @@
+<APPL NAME="AsteroidWatcher" MAX_STEPS="25">
+	<INSTANCES>
+		<pd X="370" Y="342">./math/PointDistance.comp</pd>
+		<asteroidY X="48" Y="324">./math/DoubleSingleEmitor.atom</asteroidY>
+		<earthX X="50" Y="426">./math/DoubleSingleEmitor.atom</earthX>
+		<earthY X="50" Y="540">./math/DoubleSingleEmitor.atom</earthY>
+		<asteroidX X="149" Y="181">./conv/DoubleConv.atom</asteroidX>
+		<asteroidXSim X="7" Y="46">./std/StopWatch.atom</asteroidXSim>
+		<distToCaution X="395" Y="110">./math/LessThan.atom</distToCaution>
+		<cautionDesc X="633" Y="214">./CautionToText.atom</cautionDesc>
+		<i13 X="811" Y="420">./std/LinePrinter.atom</i13>
+	</INSTANCES>
+	<CONNECTIONS>
+		<CONNECTION FROM="earthX" FROM_PORT="out" TO="pd" TO_PORT="x2"/>
+		<CONNECTION FROM="earthY" FROM_PORT="out" TO="pd" TO_PORT="y2"/>
+		<CONNECTION FROM="cautionDesc" FROM_PORT="text" TO="i13" TO_PORT="line"/>
+		<CONNECTION FROM="pd" FROM_PORT="dist" TO="distToCaution" TO_PORT="a"/>
+		<CONNECTION FROM="asteroidXSim" FROM_PORT="time" TO="asteroidX" TO_PORT="fromInt"/>
+		<CONNECTION FROM="distToCaution" FROM_PORT="less" TO="cautionDesc" TO_PORT="caution"/>
+		<CONNECTION FROM="asteroidX" FROM_PORT="out" TO="pd" TO_PORT="x1"/>
+		<CONNECTION FROM="asteroidY" FROM_PORT="out" TO="pd" TO_PORT="y1"/>
+	</CONNECTIONS>
+	<CONSTANTS>
+		<CONSTANT VALUE="5.0" TO="asteroidY" TO_PORT="constant"/>
+		<CONSTANT VALUE="10.0" TO="earthX" TO_PORT="constant"/>
+		<CONSTANT VALUE="12.0" TO="earthY" TO_PORT="constant"/>
+		<CONSTANT VALUE="8.0" TO="distToCaution" TO_PORT="b"/>
+	</CONSTANTS>
+</APPL>
+

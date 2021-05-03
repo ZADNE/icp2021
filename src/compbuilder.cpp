@@ -4,6 +4,7 @@
 #include "compbuilder.h"
 
 #include <filesystem>
+#include <algorithm>
 
 #include "blockbuildutils.h"
 #include "speccache.h"
@@ -17,30 +18,35 @@ CompBuilder::CompBuilder(const std::string& libPath):
 
 bool CompBuilder::buildComp(const std::string& headerPath, const CompSpec& comp,
                              std::set<std::string>* toBeBuilt){
-    std::ofstream o{headerPath, std::ofstream::trunc};
+    std::ofstream o{m_libPath + headerPath, std::ofstream::trunc};
     if (!o.good()) return false;//Cannot create the file :-/
     //Macro guard
-    BlockBuildUtils::writeGuardStartAndLib(o, comp.name);
+    BlockBuildUtils::writeGuardStart(o, comp.name);
     //Includes
-    BlockBuildUtils::writeInstanceIncludes(o, comp.instances);
+    size_t undive = std::count(headerPath.begin(), headerPath.end(), '/') - 1;
+    BlockBuildUtils::writeInstanceIncludes(o, comp.instances, undive);
     //Templates
-    BlockBuildUtils::writeTemplates(o, comp.inputs, comp.outputs);
+    //BlockBuildUtils::writeTemplates(o, comp.inputs, comp.outputs);
     //Class
     o << "class " << comp.name << ": public ____Signaller{\n";
     o << "public:\n";
     //Constructor
     o << '\t' << comp.name << "(const std::string& ____name):\n";
+    //Instance initializer list
     for (auto& inst: comp.instances){
         const AnySpec& instOf = SpecCache::fetchAny(inst.path);
         if (std::holds_alternative<AtomSpec>(instOf)){
             //Instance of atomic block
-            o << "\t\t" << inst.name << "(&____changed)\n";
+            o << "\t\t" << inst.name << "(&____changed),\n";
         } else if (std::holds_alternative<CompSpec>(instOf)){
             //Instance of composite block
-            o << "\t\t" << inst.name << "(\"" << inst.name << ".\")\n";
+            o << "\t\t" << inst.name << "(____name + \"" << inst.name << ".\"),\n";
         } else throw;
     }
+    o << "\t\t____changed(false)\n";
     o << "\t{\n";
+    //Name input ports of this block
+    BlockBuildUtils::writePortNameSetters(o, "", comp.inputs);
     //Name output ports of this block
     BlockBuildUtils::writePortNameSetters(o, "", comp.outputs);
     //Name output ports of atomic blocks directly inside this composite block

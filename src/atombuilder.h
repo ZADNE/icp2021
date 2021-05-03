@@ -19,7 +19,10 @@ public:
     bool buildAtom(const std::string& headerPath, const AtomSpec& atom);
 
 protected:
-    AtomBuilder();
+    AtomBuilder(const std::string& libPath);
+
+private:
+    const std::string& m_libPath;
 };
 
 #endif // ATOMBUILDER_H

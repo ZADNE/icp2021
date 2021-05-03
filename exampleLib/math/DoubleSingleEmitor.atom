@@ -1,0 +1,14 @@
+<ATOM NAME="DoubleSingleEmitor">
+	<INPUT_PORTS>
+		<constant>double</constant>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<out>double</out>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (constant &amp;&amp; !emited){
+  emited == true;
+  out(constant());
+}</FUNCTION_BODY>
+	<STATE_VARIABLES>bool emited = false;</STATE_VARIABLES>
+</ATOM>
+

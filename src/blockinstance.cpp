@@ -24,6 +24,8 @@ BlockInstance::BlockInstance(QWidget* parent) :
 
     connect(ui->instanceName, &QLineEdit::textChanged,
             this, &BlockInstance::changed);
+    connect(ui->instanceName, &QLineEdit::textChanged,
+            this, &BlockInstance::renamedInstance);
 
     ui->toolButton->addAction(ui->actionEditClass);
     ui->toolButton->addAction(ui->actionEditClassPath);
@@ -37,11 +39,10 @@ BlockInstance::~BlockInstance(){
 }
 
 bool BlockInstance::init(QString relPath, QString name, QGraphicsScene* scene, QGraphicsRectItem* parentRect){
-    m_relPath = relPath;
     m_scene = scene;
     m_parentRect = parentRect;
     ui->instanceName->setText(name);
-    return reload();
+    return reload(relPath);
 }
 
 void BlockInstance::editPath(){
@@ -50,8 +51,7 @@ void BlockInstance::editPath(){
                 tr("Enter new filepath to class:"), QLineEdit::Normal,
                 m_relPath);
     if (!newPath.isNull() && m_relPath != newPath){
-        m_relPath = newPath;
-        reload();
+        reload(newPath);
     }
 }
 
@@ -64,7 +64,7 @@ void BlockInstance::appendMySpecs(InstanceList& instl, ConstantList& cnstl){
     std::string instName = ui->instanceName->text().toStdString();
     instl.emplace_back(instName, m_relPath.toStdString(), m_parentRect->pos().x(), m_parentRect->pos().y());
     //Constants
-    for (auto& portWidget: m_portWidgets) {
+    for (auto& portWidget: m_inputs) {
         if (portWidget->hasConst()){
             cnstl.emplace_back(portWidget->getConstValue().toStdString(),
                                instName,
@@ -81,12 +81,32 @@ void BlockInstance::setConstPort(QString portName, QString value){
 }
 
 PortWidget* BlockInstance::getPort(QString portName){
-    for (int i = 0; i < m_portWidgets.size(); ++i) {
-        if (m_portWidgets[i]->getPortName() == portName){
-            return m_portWidgets[i];
+    //Search input ports
+    for (auto& port: m_inputs){
+        if (port->getPortName() == portName){
+            return port;
+        }
+    }
+    //Search output ports
+    for (auto& port: m_outputs){
+        if (port->getPortName() == portName){
+            return port;
         }
     }
     return nullptr;
+}
+
+void BlockInstance::classEdited(QString path){
+    if (path == m_relPath || path == ""){
+        reload(m_relPath);
+    }
+}
+
+void BlockInstance::classRenamed(QString oldPath, QString newPath){
+    if (oldPath == m_relPath){
+        m_relPath = newPath;
+        emit changed();
+    }
 }
 
 void BlockInstance::resizeEvent(QResizeEvent* event){
@@ -95,15 +115,21 @@ void BlockInstance::resizeEvent(QResizeEvent* event){
 }
 
 void BlockInstance::closeEvent(QCloseEvent* event){
-    for (int i = 0; i < m_portWidgets.size(); ++i) {
-        emit m_portWidgets[i]->disconnectPort(m_portWidgets[i]);
+    //Disconnect inputs
+    for (auto& port: m_inputs){
+        emit port->disconnectPort(port);
+    }
+    //Disconnect outputs
+    for (auto& port: m_outputs){
+        emit port->disconnectPort(port);
     }
     emit changed();
     m_scene->removeItem(m_parentRect);
     event->accept();
 }
 
-bool BlockInstance::reload(){
+bool BlockInstance::reload(QString relPath){
+    m_relPath = relPath;
     QString className = tr("<invalid-path>");
     PortList inputs;
     PortList outputs;
@@ -127,39 +153,62 @@ bool BlockInstance::reload(){
     }
     ui->iconLabel->setPixmap(QIcon{icon}.pixmap(16, 16));
     ui->classLabel->setText(className);
-    //Rebuild slots
-    rebuildPorts(inputs, outputs);
+    //Rebuild ports
+    rebuildPorts(inputs, PortType::Input, m_inputs);
+    rebuildPorts(outputs, PortType::Output, m_outputs);
     emit changed();
     return rvalue;
 }
 
-void BlockInstance::rebuildPorts(const PortList& inputs, const PortList& outputs){
-    //Clear previous buttons
-    for (int i = 0; i < m_portWidgets.size(); ++i) {
-        emit m_portWidgets[i]->disconnectPort(m_portWidgets[i]);
-        delete m_portWidgets[i];
+void BlockInstance::rebuildPorts(const PortList& ports, PortType type, std::vector<PortWidget*>& widgets){
+    //Remove ports
+    for (size_t i = ports.size(); i < widgets.size(); ++i) {
+        emit widgets[i]->disconnectPort(widgets[i]);
+        delete widgets[i];
     }
-    m_portWidgets.clear();
-    //Create new buttons
-    addPorts(ui->inputs, inputs, PortType::Input);
-    addPorts(ui->outputs, outputs, PortType::Output);
+    if (widgets.size() > ports.size()){
+        widgets.resize(ports.size());
+    }
+    //Rename ports
+    for (size_t i = 0; i < ports.size() && i < widgets.size(); ++i) {
+        widgets[i]->setDataType(QString::fromStdString(ports[i].type));
+        widgets[i]->setPortName(QString::fromStdString(ports[i].name));
+    }
+    //Add new ports
+    for (size_t i = widgets.size(); i < ports.size(); ++i) {
+        addPort(ports[i], type);
+    }
 }
 
-void BlockInstance::addPorts(QVBoxLayout* layout, const PortList& ports, PortType type){
-    for (auto& port: ports) {
-        //Create button
-        auto* button = new PortWidget(
-                    type,
-                    QString::fromStdString(port.type),
-                    QString::fromStdString(port.name),
-                    ui->instanceName->text(),
-                    m_parentRect);
-        connect(button, &PortWidget::changed,
-                this, &BlockInstance::changed);
-        connect(button, &PortWidget::connectPort,
-                this, &BlockInstance::connectPort);
-        //Add the button to layout
-        layout->addWidget(button);
-        m_portWidgets.append(button);
+void BlockInstance::addPort(const PortSpec& port, PortType type){
+    //Create button
+    auto* button = new PortWidget(
+                type,
+                QString::fromStdString(port.type),
+                QString::fromStdString(port.name),
+                ui->instanceName->text(),
+                m_parentRect);
+    connect(button, &PortWidget::changed,
+            this, &BlockInstance::changed);
+    connect(button, &PortWidget::connectPort,
+            this, &BlockInstance::connectPort);
+    //Add the button to layout
+    if (type == PortType::Input){
+        m_inputs.push_back(button);
+        ui->inputs->addWidget(button);
+    } else {
+        m_outputs.push_back(button);
+        ui->outputs->addWidget(button);
+    }
+}
+
+void BlockInstance::renamedInstance(){
+    //Inform ports of change
+    QString newName = ui->instanceName->text();
+    for (auto* w: m_inputs){
+        w->setInstName(newName);
+    }
+    for (auto* w: m_outputs){
+        w->setInstName(newName);
     }
 }

@@ -11,10 +11,10 @@
 /// \brief POD specification of a port
 ///
 struct PortSpec{
-    PortSpec(bool templ, std::string type, std::string name):
-        templ(templ), type(type), name(name) {};
+    PortSpec(/*bool templ, */std::string type, std::string name):
+        /*templ(templ), */type(type), name(name) {};
 
-    bool templ;
+    //bool templ;
     std::string type;
     std::string name;
 };
@@ -112,6 +112,7 @@ struct ApplSpec{
     InstanceList instances;
     ConnectionList connections;
     ConstantList constants;
+    size_t maxSteps;
 };
 
 using AnySpec = std::variant<std::monostate, AtomSpec, CompSpec, ApplSpec>;

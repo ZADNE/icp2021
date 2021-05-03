@@ -1,0 +1,11 @@
+<ATOM NAME="LinePrinter">
+	<INPUT_PORTS>
+		<line>std::string</line>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS/>
+	<FUNCTION_BODY>if (line){
+  std::cout &lt;&lt; line() &lt;&lt; std::endl;
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

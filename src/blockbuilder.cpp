@@ -33,7 +33,7 @@ bool BlockBuilder::buildAtom(const std::string& atomPath){
     AtomSpec atom;
     if (!SpecCache::fetch(atomPath, atom)) return false;
     std::string headerPath = atomPath + ".hpp";
-    return atomB.buildAtom(m_libPath + headerPath, atom);
+    return atomB.buildAtom(headerPath, atom);
 }
 
 bool BlockBuilder::buildComp(const std::string& compPath, std::set<std::string>* toBeBuilt){
@@ -66,9 +66,9 @@ bool BlockBuilder::buildAppl(const std::string& applPath){
         }
         if (rvalue){
             std::string command = m_cppCompiler + m_cppFlags
-                    + m_libPath + applPath + ".cpp -o " + m_libPath + appl.name;
-            qDebug() << QString::fromStdString(command);
-            std::system(command.c_str());
+                    + m_libPath + applPath + ".cpp -o " + m_libPath + appl.name
+                    + " 2> " + m_libPath + "build.log";
+            rvalue = !std::system(command.c_str());
         }
         return rvalue;
     }  catch (...) {
@@ -99,11 +99,8 @@ bool BlockBuilder::initLibrary(){
 #include <string>
 #include <iostream>
 #include <optional>
-
-/*class ____Block{
-public:
-    virtual void func() = 0;
-};*/
+#include <cmath>
+#include <algorithm>
 
 template<typename T> class ____ReceiverPort {
 public:
@@ -117,6 +114,14 @@ friend class ____Signaller;
 public:
 
     ____InPort(bool* changed): p_changed(changed){}
+
+    operator bool() const {
+        return hasValue();
+    }
+
+    T operator()() {
+        return getValue();
+    }
 
     bool hasValue() const {
         if (p_constValue){
@@ -146,7 +151,7 @@ protected:
     }
 
     void setConstValue(const T& value, const std::string& myName) override {
-        std::cout << "$CONST$ [" << value << "] -> " << myName << std::endl;
+        std::cerr << "$CONST$ -[" << value << "]-> " << myName << std::endl;
         p_constValue = std::make_optional(value);
     }
 
@@ -159,9 +164,13 @@ template<typename T> class ____OutPort{
 friend class ____Signaller;
 public:
 
+    void operator()(const T& value) {
+        putValue(value);
+    }
+
     void putValue(const T& value){
         for (auto& cnct: p_connections){
-            std::cout << p_from << " [" << value << "] -> " << cnct.second << std::endl;
+            std::cerr << p_from << " -[" << value << "]-> " << cnct.second << std::endl;
             cnct.first->pushValue(value);
         }
     }
@@ -184,12 +193,16 @@ template<typename T> class ____RepeaterPort: public ____ReceiverPort<T>, public 
 friend class ____Signaller;
 protected:
 
+    void operator()(const T& value) {
+        putValue(value);
+    }
+
     void pushValue(const T& value) override {
         this->putValue(value);
     }
 
     void setConstValue(const T& value, const std::string& myName) override {
-        std::cout << "$CONST$ [" << value << "] -> " << myName << std::endl;
+        std::cerr << "$CONST$ [" << value << "] -> " << myName << std::endl;
         for (auto& cnct: ____OutPort<T>::p_connections){
             cnct.first->setConstValue(value, cnct.second);
         }
@@ -213,6 +226,8 @@ public:
 };
 
 #endif // !____LIBRARY_H
+
+
         )&|&";
 
     o.write(header, sizeof(header) - 1);

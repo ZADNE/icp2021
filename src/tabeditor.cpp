@@ -92,9 +92,10 @@ bool TabEditor::editFile(QString path){
 bool TabEditor::renameFile(QString oldFilePath, QString newFilePath){
     //Rename file
     QFile file{m_libPath + oldFilePath};
-    if (!file.rename(newFilePath)){
+    if (!file.rename(m_libPath + newFilePath)){
         return false;
     }
+    emit BlockEditor::sig.blockRenamed(oldFilePath, newFilePath);
     //Rename tab
     auto it = m_tabs.find(oldFilePath);
     if (it != m_tabs.end()){
@@ -116,6 +117,7 @@ bool TabEditor::deleteFile(QString path){
     if (!QFile::remove(m_libPath + path)){
         return false;
     }
+    emit BlockEditor::sig.blockEdited(path);
     //Close tab
     auto it = m_tabs.find(path);
     if (it != m_tabs.end()){
@@ -160,6 +162,7 @@ bool TabEditor::renameFolder(QString path, QString oldName, QString newName){
             ++it;
         }
     }
+    emit BlockEditor::sig.blockEdited("");
     return true;
 }
 
@@ -169,6 +172,7 @@ bool TabEditor::deleteFolder(QString path){
     if (!dir.removeRecursively()){
         return false;
     }
+    emit BlockEditor::sig.blockEdited("");
     //Close tabs
     for (auto it = m_tabs.begin(); it != m_tabs.end(); ){
         QFileInfo fi{it->first};

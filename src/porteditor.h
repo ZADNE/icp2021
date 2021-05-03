@@ -26,13 +26,15 @@ public:
 
     int count();
 
+    void setName(QString name);
+
 signals:
     void edited();
 
 public slots:
-    void contextMenu(const QPoint &point);
+    void contextMenu(const QPoint& point);
 
-    void addPort(bool templ, QString type, QString name);
+    void addPort(/*bool templ, */QString type, QString name);
     void addNewPort();
     void removeCurrentPort();
 
@@ -44,6 +46,7 @@ private:
 
     QMenu m_menuSlot;
     QMenu m_menuSpace;
+    QString m_name;
 };
 
 #endif // PORTEDITOR_H

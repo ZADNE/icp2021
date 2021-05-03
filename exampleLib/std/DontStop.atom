@@ -1,0 +1,17 @@
+<ATOM NAME="DontStop">
+	<INPUT_PORTS>
+		<in>int</in>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<out>int</out>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>out(0);
+if(in){
+  out(in());
+  while(in){
+    in();
+  }
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

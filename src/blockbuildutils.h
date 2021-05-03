@@ -9,9 +9,9 @@
 
 namespace BlockBuildUtils{
 
-    void writeTemplates(std::ofstream& o, const PortList& inputs, const PortList& outputs);
-    void writeGuardStartAndLib(std::ofstream& o, std::string blockName);
-    void writeInstanceIncludes(std::ofstream& o, const InstanceList& il);
+    //void writeTemplates(std::ofstream& o, const PortList& inputs, const PortList& outputs);
+    void writeGuardStart(std::ofstream& o, std::string blockName);
+    void writeInstanceIncludes(std::ofstream& o, const InstanceList& il, size_t undive);
 
     void writePortNameSetters(std::ofstream& o, const std::string& instance, const PortList& outputs);
     void writePortNameSettersForAtomBlocks(std::ofstream& o, const InstanceList& il);

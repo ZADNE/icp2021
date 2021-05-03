@@ -27,6 +27,9 @@ protected:
     void save() override;
     void build() override;
 
+    void reloadInputs();
+    void reloadOutputs();
+
 private:
     Ui::CompEditor *ui;
 };

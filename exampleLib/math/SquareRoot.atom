@@ -1,0 +1,13 @@
+<ATOM NAME="SquareRoot">
+	<INPUT_PORTS>
+		<in>double</in>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<out>double</out>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (in){
+  out(std::sqrt(in()));
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

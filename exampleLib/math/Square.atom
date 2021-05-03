@@ -1,0 +1,13 @@
+<ATOM NAME="Square">
+	<INPUT_PORTS>
+		<in>double</in>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<out>double</out>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (in){
+  out(std::pow(in(), 2));
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

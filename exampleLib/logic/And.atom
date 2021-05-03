@@ -1,0 +1,14 @@
+<ATOM NAME="And">
+	<INPUT_PORTS>
+		<a>bool</a>
+		<b>bool</b>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<r>bool</r>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (a &amp;&amp; b){
+  r(a() &amp;&amp; b());
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

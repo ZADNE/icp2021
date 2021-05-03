@@ -1,0 +1,13 @@
+<ATOM NAME="Not">
+	<INPUT_PORTS>
+		<in>bool</in>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<out>bool</out>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (in){
+  out(!in());
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+

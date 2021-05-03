@@ -43,6 +43,8 @@ public slots:
     void appendMySpecs(InstanceList& instl, ConstantList& cnstl);
     void setConstPort(QString portName, QString value);
     PortWidget* getPort(QString portName);
+    void classEdited(QString path);
+    void classRenamed(QString oldPath, QString newPath);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -51,14 +53,17 @@ protected:
 private:
     Ui::BlockInstance *ui;
 
-    bool reload();
-    void rebuildPorts(const PortList& inputs, const PortList& outputs);
-    void addPorts(QVBoxLayout* layout, const PortList& ports, PortType type);
+    bool reload(QString relPath);
+    void rebuildPorts(const PortList& ports, PortType type, std::vector<PortWidget*>& widgets);
+    void addPort(const PortSpec& port, PortType type);
 
     QString m_relPath;
     QGraphicsRectItem* m_parentRect = nullptr;
     QGraphicsScene* m_scene = nullptr;
-    QVector<PortWidget*> m_portWidgets;
+    std::vector<PortWidget*> m_inputs;
+    std::vector<PortWidget*> m_outputs;
+private slots:
+    void renamedInstance();
 };
 
 #endif // BLOCKINSTANCE_H

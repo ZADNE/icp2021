@@ -1,0 +1,33 @@
+<COMP NAME="PointDistance">
+	<INPUT_PORTS>
+		<x1>double</x1>
+		<y1>double</y1>
+		<x2>double</x2>
+		<y2>double</y2>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<dist>double</dist>
+	</OUTPUT_PORTS>
+	<INSTANCES>
+		<i0 X="117" Y="125">./math/Minus.atom</i0>
+		<i1 X="141" Y="457">./math/Minus.atom</i1>
+		<i2 X="339" Y="151">./math/Square.atom</i2>
+		<i3 X="367" Y="479">./math/Square.atom</i3>
+		<i4 X="467" Y="325">./math/SquareRoot.atom</i4>
+		<i5 X="243" Y="303">./math/Plus.atom</i5>
+	</INSTANCES>
+	<CONNECTIONS>
+		<CONNECTION FROM="i4" FROM_PORT="out" TO="" TO_PORT="dist"/>
+		<CONNECTION FROM="i3" FROM_PORT="out" TO="i5" TO_PORT="b"/>
+		<CONNECTION FROM="i0" FROM_PORT="r" TO="i2" TO_PORT="in"/>
+		<CONNECTION FROM="i1" FROM_PORT="r" TO="i3" TO_PORT="in"/>
+		<CONNECTION FROM="" FROM_PORT="y1" TO="i1" TO_PORT="a"/>
+		<CONNECTION FROM="i2" FROM_PORT="out" TO="i5" TO_PORT="a"/>
+		<CONNECTION FROM="" FROM_PORT="y2" TO="i1" TO_PORT="b"/>
+		<CONNECTION FROM="" FROM_PORT="x1" TO="i0" TO_PORT="a"/>
+		<CONNECTION FROM="" FROM_PORT="x2" TO="i0" TO_PORT="b"/>
+		<CONNECTION FROM="i5" FROM_PORT="r" TO="i4" TO_PORT="in"/>
+	</CONNECTIONS>
+	<CONSTANTS/>
+</COMP>
+

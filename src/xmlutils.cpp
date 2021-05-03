@@ -124,6 +124,8 @@ bool XMLUtils::readAppl(const std::string& applPath, ApplSpec& appl){
         auto* attr = node->first_attribute();
         if (!attr || strcmp(attr->name(), "NAME") != 0) return false;
         appl.name = attr->value();
+        if (!(attr = attr->next_attribute()) || strcmp(attr->name(), "MAX_STEPS") != 0) return false;
+        appl.maxSteps = std::stoull(attr->value());
         //Instances
         if (!(node = node->first_node()) || strcmp(node->name(), "INSTANCES") != 0) return false;
         if (!extractInstances(node->first_node(), appl.instances)) return false;
@@ -214,6 +216,8 @@ bool XMLUtils::writeAppl(const std::string& applPath, const ApplSpec& appl){
     doc.append_node(atomNode);
     //Name
     atomNode->append_attribute(doc.allocate_attribute("NAME", appl.name.c_str()));
+    std::string steps = std::to_string(appl.maxSteps);
+    atomNode->append_attribute(doc.allocate_attribute("MAX_STEPS", steps.c_str()));
     //Instances
     node = doc.allocate_node(rapidxml::node_element, "INSTANCES");
     atomNode->append_node(node);
@@ -238,14 +242,14 @@ XMLUtils::XMLUtils(){
 
 void XMLUtils::extractPorts(xml_node* node, PortList& sl){
     while (node){
-        bool templ = false;
+        /*bool templ = false;
         auto* attr = node->first_attribute();
         if (attr
             && strcmp(attr->name(), "TEMPLATE") == 0
             && strcmp(attr->value(), "TRUE") == 0){
             templ = true;
-        }
-        sl.emplace_back(templ, node->value(), node->name());
+        }*/
+        sl.emplace_back(/*templ, */node->value(), node->name());
         node = node->next_sibling();
     }
 }
@@ -320,7 +324,7 @@ bool XMLUtils::extractContants(xml_node* node, ConstantList& cl){
 void XMLUtils::insertPorts(xml_doc* doc, xml_node* node, const PortList& sl){
     for(auto& slot: sl){
         auto* slotNode = doc->allocate_node(rapidxml::node_element, slot.name.c_str(), slot.type.c_str());
-        slotNode->append_attribute(doc->allocate_attribute("TEMPLATE", slot.templ ? "TRUE": "FALSE"));
+        //slotNode->append_attribute(doc->allocate_attribute("TEMPLATE", slot.templ ? "TRUE": "FALSE"));
         node->append_node(slotNode);
     }
 }

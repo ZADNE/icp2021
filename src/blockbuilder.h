@@ -6,17 +6,12 @@
 #include <string>
 #include <set>
 
+#include "rapidxml/rapidxml.hpp"
+
 #include "blockspec.h"
 #include "atombuilder.h"
 #include "compbuilder.h"
 #include "applbuilder.h"
-
-namespace rapidxml{
-    template<class Ch>class xml_document;
-    template<class Ch>class xml_node;
-}
-using xml_doc = rapidxml::xml_document<char>;
-using xml_node = rapidxml::xml_node<char>;
 
 ///
 /// \brief Builder for all block files (*.atom, *.comp, *.appl)
@@ -49,7 +44,7 @@ private:
     std::string m_cppCompiler = "g++ ";
     std::string m_cppFlags = " -std=c++17 ";
 
-    AtomBuilder atomB;
+    AtomBuilder atomB{m_libPath};
     CompBuilder compB{m_libPath};
     ApplBuilder applB{m_libPath};
 };

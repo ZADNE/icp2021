@@ -1,0 +1,28 @@
+<ATOM NAME="NumberPrinter">
+	<INPUT_PORTS>
+		<in0>float</in0>
+		<in1>double</in1>
+		<in2>int</in2>
+		<in3>bool</in3>
+		<prefix>std::string</prefix>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS/>
+	<FUNCTION_BODY>if (prefix){
+  s_prefix = prefix();
+}
+
+if (in0){
+  std::cout &lt;&lt; s_prefix &lt;&lt; in0() &lt;&lt; std::endl;
+}
+if (in1){
+  std::cout &lt;&lt; s_prefix &lt;&lt; in1() &lt;&lt; std::endl;
+}
+if (in2){
+  std::cout &lt;&lt; s_prefix &lt;&lt; in2() &lt;&lt; std::endl;
+}
+if (in3){
+  std::cout &lt;&lt; s_prefix &lt;&lt; in3() &lt;&lt; std::endl;
+}</FUNCTION_BODY>
+	<STATE_VARIABLES>std::string s_prefix;</STATE_VARIABLES>
+</ATOM>
+

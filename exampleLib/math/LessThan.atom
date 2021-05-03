@@ -1,0 +1,18 @@
+<ATOM NAME="LessThan">
+	<INPUT_PORTS>
+		<a>double</a>
+		<b>double</b>
+	</INPUT_PORTS>
+	<OUTPUT_PORTS>
+		<less>bool</less>
+	</OUTPUT_PORTS>
+	<FUNCTION_BODY>if (a &amp;&amp; b){
+  if (a() &lt; b()){
+    less(true);
+  } else {
+    less(false);
+  }
+}</FUNCTION_BODY>
+	<STATE_VARIABLES/>
+</ATOM>
+
