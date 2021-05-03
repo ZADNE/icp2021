@@ -11,7 +11,7 @@ Knihovnu tvoří adresář (přiložena ukázková knihovna "exampleLib").
 Podadresáře knihovny tvoří kategorie.
 Atomický block je reprezentován XML souborem s koncovkou "*.atom", kompozitní "*.comp", aplikace "*.appl".
 ### Generování výstupu:
-Každého soubor bloku (se podle jeho typu a dat) sestaví na hlavičkový soubor.
+Každý soubor bloku se (podle jeho typu a dat) sestaví na hlavičkový soubor.
 Soubor aplikace se sestaví na C++ zdrojový soubor s main funkcí.
 Uživatel může bloky sestavovat každý sám nebo se automaticky sestaví všechny závislé bloky při generování aplikace.
 Při sestavování aplikace se rovnou zdrojové soubory zkompilují (g++) na výstupní spustitelnou aplikaci.
